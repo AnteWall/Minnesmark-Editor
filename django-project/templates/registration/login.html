@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login_wrapper">
+  {% if form.errors %}
+  <p>Användarnamnet eller lösenordet är felaktigt, eller så har ditt konto inte aktiverats än!</p>
+  {% endif %}
+  <h2>Minnesmark</h2>
+  {% if user.is_authenticated %}
+  <p> Du är redan inloggad! <a href="/accounts/logout">Logga ut? </a> </p>
+  {% else %}
+
+  <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+
+    {% csrf_token %}
+
+      
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {{ form.password.label_tag }}
+        {{ form.password }}
+
+
+    <input type="submit" value="Logga in" />
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+  {% endif %}
+</div>
+{% endblock %}
