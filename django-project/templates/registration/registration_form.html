@@ -3,9 +3,12 @@
 
 {% block content %}
 <div class="login_wrapper">
-  {% if form.errors %}
-  {% endif %}
   <h2>Registera Dig</h2>
+  <ul>
+    {% for error in all_errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
   <form method="post" action="{% url 'register' %}">
 
     {% csrf_token %}
