@@ -3,25 +3,20 @@
 
 {% block content %}
 <div class="login_wrapper">
-  <h2>Registera Dig</h2>
+  <h2>Registrera Dig</h2>
   <ul>
     {% for error in all_errors %}
     <li>{{ error }}</li>
     {% endfor %}
   </ul>
   <form method="post" action="{% url 'register' %}">
-
     {% csrf_token %}
-
-    <input type="text" name="username" placeholder="Användarnamn...">
-    <input type="text" name="firstname" placeholder="Förnamn...">
-    <input type="text" name="lastname" placeholder="Efternamn...">
-    <input type="text" name="email" placeholder="Email...">
-    <input type="password" name="password" placeholder="Lösenord...">
-    <input type="password" name="password_again" placeholder="Lösenord igen...">    
-    <input type="submit" value="Logga in" />
+    <input type="text" name="username" placeholder="Användarnamn..." required="required">
+    <input type="email" name="email" placeholder="Email..." required="required">
+    <input type="password" name="password" placeholder="Lösenord..." required="required">
+    <input type="password" name="password_again" placeholder="Lösenord igen..." required="required">    
+    <input type="submit" value="Registera" />
   </form>
 </div>
-  <input type="submit" value="{% trans 'Submit' %}" />
 </form>
 {% endblock %}

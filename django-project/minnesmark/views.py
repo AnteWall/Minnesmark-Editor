@@ -12,21 +12,25 @@ import datetime
 #    return render(request, 'test/current_datetime.html', {'current_date': now})
 
 def username_validation(username):
+    """Check validation for username"""
     errors = []
-
+    #Check if Username exists
     if(username_present(username)):
         errors.append("Användarnamnet finns redan.")
-    if(len(username) <= 0):
-        errors.append("Användarnamnet måste vara längre än 0 tecken.")
+    #Username needs to be longer then 3 chars
+    if(len(username) <= 3):
+        errors.append("Användarnamnet måste vara 3 tecken eller längre.")
 
     return errors
 
 def username_present(username):
+    """Check Database for username, return true if found"""
     if User.objects.filter(username=username).count():
         return True
     return False
 
 def password_validation(pass1,pass2):
+    """Check validation for password"""
     errors = []
     if(pass1 != pass2):
         errors.append("Lösenorden matchade inte.")
@@ -46,11 +50,15 @@ def register_account(request):
         all_errors.extend(username_validation(request.POST['username']))
 
         if(len(all_errors) <= 0):
+            #Create new User
             newuser = User.objects.create_user(request.POST["username"],request.POST["email"], request.POST["password"])
+            #Set Flag is_active to false
             newuser.is_active = False
+            #Save to database
             newuser.save()
             return render(request,'registration/registration_complete.html')
         else:
+            #Return view with all errors
             return render(request,'registration/registration_form.html',{'all_errors':all_errors})
 
     return render(request,'registration/registration_form.html')
