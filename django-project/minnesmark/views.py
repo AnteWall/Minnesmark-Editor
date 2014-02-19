@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 
 import datetime
 
@@ -54,6 +55,8 @@ def register_account(request):
             newuser = User.objects.create_user(request.POST["username"],request.POST["email"], request.POST["password"])
             #Set Flag is_active to false
             newuser.is_active = False
+            newuser.first_name = request.POST['firstname']
+            newuser.last_name = request.POST['lastname']
             #Save to database
             newuser.save()
             return render(request,'registration/registration_complete.html')
@@ -62,3 +65,16 @@ def register_account(request):
             return render(request,'registration/registration_form.html',{'all_errors':all_errors})
 
     return render(request,'registration/registration_form.html')
+
+@staff_member_required
+def approveUser(request):
+    if request.method == 'POST':
+        user = User.objects.get(id=int(request.POST['userid']))
+        user.is_active = True
+        user.save()
+    
+        users = User.objects.filter(is_active=False)
+        return render(request,'admin/approve.html',{"users":users})
+    
+    users = User.objects.filter(is_active=False)
+    return render(request,'admin/approve.html',{"users":users})
