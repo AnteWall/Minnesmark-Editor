@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from minnesmark.views import register_account
 from editor.views import render_page
+from minnesmark.views import approveUser
 from django.contrib.auth.views import login
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse_lazy
@@ -22,6 +23,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/approve', approveUser),
 
     # url for Login Page using Django built in login
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
@@ -29,7 +31,7 @@ urlpatterns = patterns('',
     url(r'^accounts/register$', register_account,name="register"),
 
     #url for the editor
-    url(r'^editor$', render_page),
+    url(r'^editor', render_page),
 
     # Testing
     #url(r'^date/$', current_datetime)

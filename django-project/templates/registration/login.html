@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="login_wrapper">
+  <h2>Logga in</h2>
   {% if form.errors %}
   <p>Användarnamnet eller lösenordet är felaktigt, eller så har ditt konto inte aktiverats än!</p>
   {% endif %}
-  <h2>Minnesmark</h2>
+
   {% if user.is_authenticated %}
   <p> Du är redan inloggad! <a href="/accounts/logout">Logga ut? </a> </p>
   {% else %}
@@ -24,6 +25,7 @@
     <input type="submit" value="Logga in" />
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
+  <a href="/accounts/register" class="reg-btn">Registera konto</a>
   {% endif %}
 </div>
 {% endblock %}

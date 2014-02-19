@@ -1,7 +1,6 @@
 {% load i18n %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
   <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -9,27 +8,40 @@
 
   {% endblock %}
     <link rel="stylesheet" href="/static/style.css" />
-    <title>{% block title %}User test{% endblock %}</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="/static/style.css" />
+    <title>{% block title %}Minnesmark{% endblock %}</title>
 </head>
 
 <body>
+    <header>
+      <h2>Minnesmark</h2>
+      <nav>
+        <ul>
+	{% block header %}
+	<li><a href="{% url 'index' %}">{% trans "Hem" %}</a></li>
+        {% if user.is_superuser %}
+        <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
+        <li><a href="/admin/approve">{% trans "Godkänn Konton" %}</a></li>
 
-    <div id="header">
-        {% block header %}
-	<a href="{% url 'index' %}">{% trans "Home" %}</a> | 
-
+        {% endif %}
+        {% if user.is_authenticated %}
+        <li><a href="/editor/">{% trans "Editor" %}</a></li> 
+        {% endif %}
         {% endblock %}
-    </div>
+        </ul>
+      </nav>
+    </header>
 
     <div id="content">
         {% block content %}{% endblock %}
     </div>
 
-    <div id="footer">
+    <footer>
         {% block footer %}
         <hr />
         {% endblock %}
-    </div>
+    </footer>
 </body>
 
 </html>
