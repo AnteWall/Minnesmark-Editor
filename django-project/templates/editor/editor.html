@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Editor{% endblock %}
+
+{% block metadata %}
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+<link rel="stylesheet"
+       href="/static/editor/style.css"/>
+
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true">
+</script>
+<script type="text/javascript"
+        src="/static/editor/javascript/mapeditor.js">
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div>
+  <div>
+    <p>Här kommer en sexig editorsida inom kort!</p>
+  </div>
+  <div id="search">
+    <p>Här ska sökrutan finnas</p>
+  </div>
+  <div id="map-wrapper">
+    <div id="map-canvas"/>
+  </div>
+  <div id="lists">
+    <p>Här ska alla listor ligga</p>
+  </div>
+  <div id="editor_info">
+    <p>Här ska information om editorn finnas</p>
+  </div>
+</div>
+{% endblock %}
