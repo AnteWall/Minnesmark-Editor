@@ -1,4 +1,44 @@
+#map-wrapper{
+    position: relative;
+    height: 800px;
+    width: 800px;
+}
 #map-canvas{
-    height: 300px;
-    width: 300px;
+    height: 100%;
+    width: 100%;
+}
+#markers-wrapper{
+    position:absolute;
+    top:0;
+    right:0;
+    padding: 10px;
+    background: rgba(40,40,40,.5);
+}
+#markers-wrapper .marker{
+    position: relative;
+    height: 42px;
+    width: 32px;
+    display: inline-block;
+    margin: 0 5px 0 0;
+    cursor: pointer;
+    background-image: url(/static/editor/img/marker.png);
+}
+#markers-wrapper .hidden{
+    background-image: url(/static/editor/img/marker-white.png)!important;
+}
+
+.labels,
+#markers-wrapper .marker p.marker-text{
+    color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+    width: 38px;
+    white-space: nowrap;
+}
+#markers-wrapper .marker p.marker-text{
+    position: absolute;
+    top: 10px;
+    left: 12px;
 }

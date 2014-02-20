@@ -9,12 +9,12 @@
        href="/static/editor/style.css"/>
 
 <script type="text/javascript"
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true">
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true&libraries=geomentry">
 </script>
 <script type="text/javascript"
         src="/static/editor/javascript/mapeditor.js">
 </script>
-<script type="text/javascript" src="http://l2.io/ip.js?var=userIP"></script>
+<script type="text/javascript" src="/static/editor/javascript/markerwithlabel.js"></script>
 
 {% endblock %}
 
@@ -28,7 +28,30 @@
     <p>Här ska sökrutan finnas</p>
   </div>
   <div id="map-wrapper">
-    <div id="map-canvas"/>
+      <div id="map-canvas"></div>
+      <div id="markers-wrapper">
+          <div class="marker">
+              <p class="marker-text">1</p>
+          </div>
+          <div class="marker hidden">
+              <p class="marker-text">2</p>
+          </div>
+          <div class="marker hidden">
+              <p class="marker-text">3</p>
+
+          </div>
+          <div class="marker hidden">
+              <p class="marker-text">4</p>
+
+          </div>
+          <div class="marker hidden">
+              <p class="marker-text">5</p>
+
+          </div>
+          <div class="marker hidden">
+              <p class="marker-text">6</p>
+          </div>
+      </div>
   </div>
   <div id="lists">
     <p>Här ska alla listor ligga</p>
