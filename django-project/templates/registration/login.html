@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="login_wrapper">
   <h2>Logga in</h2>
   {% if form.errors %}
@@ -14,12 +15,11 @@
   <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
 
     {% csrf_token %}
-
-      
-        {{ form.username.label_tag }}
-        {{ form.username }}
-        {{ form.password.label_tag }}
-        {{ form.password }}
+    
+    {{ form.username.label_tag }}
+    {{ form.username }}
+    {{ form.password.label_tag }}
+    {{ form.password }}
 
 
     <input type="submit" value="Logga in" />
@@ -28,4 +28,5 @@
   <a href="/accounts/register" class="reg-btn">Registera konto</a>
   {% endif %}
 </div>
+
 {% endblock %}

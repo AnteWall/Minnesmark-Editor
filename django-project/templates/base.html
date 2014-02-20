@@ -15,17 +15,15 @@
 
 <body>
     <header>
-      <h2>Minnesmark</h2>
+      <img id="logotype" alt="Minnesmark" src="/static/images/logo.jpg" />
+      <h1>Minnesmark</h1>
       <nav>
         <ul>
 	{% block header %}
+	{% if user.is_superuser %}
 	<li><a href="{% url 'index' %}">{% trans "Hem" %}</a></li>
-        {% if user.is_superuser %}
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         <li><a href="/admin/approve">{% trans "Godkänn Konton" %}</a></li>
-
-        {% endif %}
-        {% if user.is_authenticated %}
         <li><a href="/editor/">{% trans "Editor" %}</a></li> 
         {% endif %}
         {% endblock %}
