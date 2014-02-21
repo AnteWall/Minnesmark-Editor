@@ -100,6 +100,16 @@ $('document').ready(function(){
     }
     google.maps.event.addDomListener(window, 'load', initialize);
 
+    $('.remove-marker').on('click',function(){
+        markers[markers.length-1].setMap(null);
+        markers[markers.length-1].radius.setMap(null);
+
+        markers.pop();
+        $("#markers-wrapper").find("[data-markerid='" + (markers.length+1).toString() + "']").show();
+        $("#markers-wrapper").find("[data-markerid='" + (markers.length+2).toString() + "']").addClass('hidden');
+
+    });
+
     $('.marker').on('click',function(){
 
         var curMarkerCount = (markers.length+1);
@@ -115,36 +125,34 @@ $('document').ready(function(){
                 labelInBackground: false,
                 animation: google.maps.Animation.DROP
             });
-
+            newMarker.iw = new google.maps.InfoWindow({
+                content: "<div class='infoMarker'>Markörerna är placerade för nära varandra.</div>"
+            });
             // Add circle overlay and bind to marker
-            var radius = new google.maps.Circle({
+            newMarker.radius = new google.maps.Circle({
                 map: map,
                 radius: radiusDistance,    // Meters
                 fillColor: 'gray',
                 strokeWeight:0
             });
-            radius.bindTo('center', newMarker, 'position');
+            newMarker.radius.bindTo('center', newMarker, 'position');
 
             google.maps.event.addListener(newMarker, "dragend", function(event) {
                 if(markers.length > 1){
-                    collisionDetectMarkers(newMarker);
+
+                    if(collisionDetectMarkers(newMarker)){
+
+                        newMarker.iw.open(map,newMarker);
+                    }else{
+                        newMarker.iw.close();
+                    }
                 }
             });
             markers.push(newMarker);
             newMarker.setMap(map);
 
-
-
-            var i = 0;
-            $('#markers-wrapper').find('.marker').each(function(e){
-                if(i == curMarkerCount-1){
-                    $(this).fadeOut()
-                }
-                if(i == curMarkerCount){
-                    $(this).removeClass('hidden');
-                }
-                i++;
-            })
+            $("#markers-wrapper").find("[data-markerid='" + curMarkerCount.toString() + "']").hide();
+            $("#markers-wrapper").find("[data-markerid='" + (curMarkerCount+1).toString() + "']").removeClass('hidden');
         }
 
 
@@ -152,14 +160,16 @@ $('document').ready(function(){
     });
 
     function collisionDetectMarkers(curMarker){
-        for(var i = 0; i < markers.length-1; i++){
-            if(markers[i+1] != curMarker){
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(curMarker.getPosition(),markers[i+1].getPosition());
+        for(var i = 0; i < markers.length; i++){
+            if(markers[i] != curMarker){
+                var distance = google.maps.geometry.spherical.computeDistanceBetween(curMarker.getPosition(),markers[i].getPosition());
                 if(distance < radiusDistance*2){
-                    //TODO Change position of dragged marker outside of collision area
+                    console.log("wut");
+                    return true;
                 }
             }
         }
+        return false;
     }
 
 });
