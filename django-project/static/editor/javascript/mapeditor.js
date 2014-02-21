@@ -3,8 +3,9 @@ $('document').ready(function(){
         var browserSupportFlag =  new Boolean();
         var initialLocation = new google.maps.LatLng(64.182464, -51.723343);
         var markers = [];
+        var pathPositions = [];
         var radiusDistance = 10;
-
+        var markerIndex = 0;
         function initialize() {
             var mapOptions = {
                 center: new google.maps.LatLng(59.319878, 18.065536),
@@ -100,8 +101,11 @@ $('document').ready(function(){
         $('.remove-marker').on('click',function(){
             markers[markers.length-1].setMap(null);
             markers[markers.length-1].radius.setMap(null);
-
+            markers[markers.length-1].poly.setMap(null);
             markers.pop();
+            pathPositions.pop();
+            markerIndex -= 1;
+
             $("#markers-wrapper").find("[data-markerid='" + (markers.length+1).toString() + "']").show();
             $("#markers-wrapper").find("[data-markerid='" + (markers.length+2).toString() + "']").addClass('hidden');
 
@@ -122,6 +126,21 @@ $('document').ready(function(){
                     labelInBackground: false,
                     animation: google.maps.Animation.DROP
                 });
+                newMarker.markerIndex = markerIndex;
+                markerIndex +=1;
+                pathPositions.push(newMarker.getPosition());
+
+                var polyOptions = {
+                    strokeColor: '#000000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 3,
+                    path: pathPositions,
+                    map:map,
+                    editable:true
+                };
+                newMarker.poly = new google.maps.Polyline(polyOptions);
+
+                //Add infoWindow for marker
                 newMarker.iw = new google.maps.InfoWindow({
                     content: "<div class='infoMarker'>Markörerna är placerade för nära varandra.</div>"
                 });
@@ -134,16 +153,20 @@ $('document').ready(function(){
                 });
                 newMarker.radius.bindTo('center', newMarker, 'position');
 
+                //Event Listener for DragEnd(Drop) (Marker)
                 google.maps.event.addListener(newMarker, "dragend", function(event) {
                     if(markers.length > 1){
-
                         if(collisionDetectMarkers(newMarker)){
-
                             newMarker.iw.open(map,newMarker);
                         }else{
                             newMarker.iw.close();
                         }
                     }
+                });
+                //Event Listener for Drag (Marker)
+                google.maps.event.addListener(newMarker, "drag", function(event) {
+                    pathPositions[newMarker.markerIndex] = (newMarker.getPosition());
+                    reDrawPolylines();
                 });
                 markers.push(newMarker);
                 newMarker.setMap(map);
@@ -151,8 +174,9 @@ $('document').ready(function(){
                 $("#markers-wrapper").find("[data-markerid='" + curMarkerCount.toString() + "']").hide();
                 $("#markers-wrapper").find("[data-markerid='" + (curMarkerCount+1).toString() + "']").removeClass('hidden');
             }
-
-
+            google.maps.event.addListener(map, "zoom_changed", function(event) {
+                reDrawPolylines();
+            });
 
         });
 
@@ -167,5 +191,9 @@ $('document').ready(function(){
             }
             return false;
         }
-
+        function reDrawPolylines(){
+            for(var i = 0; i < markers.length; i++){
+                markers[i].poly.setPath(pathPositions);
+            }
+        }
     });
