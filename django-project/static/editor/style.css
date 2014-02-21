@@ -1,6 +1,11 @@
+#map-wrapper{
+    position: relative;
+    height: 800px;
+    width: 800px;
+}
 #map-canvas{
-    height: 700px;
-    width: 700px;
+    height: 100%;
+    width: 100%;
 }
 
 .controls {
@@ -45,4 +50,59 @@
     font-family: Roboto;
     font-size: 13px;
     font-weight: 300;
+}
+
+#markers-wrapper{
+    position:absolute;
+    top:0;
+    right:0;
+    padding: 10px;
+    background: rgba(40,40,40,.5);
+}
+#markers-wrapper .marker{
+    position: relative;
+    height: 42px;
+    width: 32px;
+    display: inline-block;
+    margin: 0 5px 0 0;
+    cursor: pointer;
+    background-image: url(/static/editor/img/marker.png);
+}
+#markers-wrapper .hidden{
+    background-image: url(/static/editor/img/marker-white.png)!important;
+}
+
+.labels,
+#markers-wrapper .marker p.marker-text{
+    color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+    width: 38px;
+    white-space: nowrap;
+}
+#markers-wrapper .marker p.marker-text{
+    position: absolute;
+    top: 10px;
+    left: 12px;
+}
+#markers-options{
+    position:absolute;
+    top:65px;
+    right:0;
+    padding: 10px;
+}
+#markers-options .remove-marker{
+    background: red;
+    padding: 3px 5px 3px 5px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    display: block;
+}
+
+.infoMarker{
+    width: 300px!important;
+    height: 40px!important;
 }
