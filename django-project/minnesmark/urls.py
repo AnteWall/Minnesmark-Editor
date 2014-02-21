@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     url(r'^accounts/register$', register_account,name="register"),
 
     #url for the editor
-    url(r'^editor$', render_page),
+    url(r'^editor', render_page),
 
     # Testing
     #url(r'^date/$', current_datetime)
