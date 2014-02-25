@@ -9,30 +9,50 @@
        href="/static/editor/style.css"/>
 
 <script type="text/javascript"
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true">
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true&libraries=geomentry&libraries=places">
 </script>
-<script type="text/javascript"
+    <script type="text/javascript" src="/static/editor/javascript/markerwithlabel.js"></script>
+
+    <script type="text/javascript"
         src="/static/editor/javascript/mapeditor.js">
 </script>
-<script type="text/javascript" src="http://l2.io/ip.js?var=userIP"></script>
 
-
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 
 {% endblock %}
 
 
 {% block content %}
 <div>
-  <div>
-    <p>Här kommer en sexig editorsida inom kort!</p>
-  </div>
-  <div id="search">
-    <p>Här ska sökrutan finnas</p>
-  </div>
   <div id="map-wrapper">
     <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-    <div id="map-canvas"/>
+    <div id="map-wrapper"/>
+      <div id="map-canvas"></div>
+      <div id="markers-wrapper">
+          <div data-markerid="1"  class="marker">
+              <p class="marker-text">1</p>
+          </div>
+          <div data-markerid="2"  class="marker hidden">
+              <p class="marker-text">2</p>
+          </div>
+          <div data-markerid="3"  class="marker hidden">
+              <p class="marker-text">3</p>
+
+          </div>
+          <div data-markerid="4"  class="marker hidden">
+              <p class="marker-text">4</p>
+
+          </div>
+          <div data-markerid="5" class="marker hidden">
+              <p class="marker-text">5</p>
+
+          </div>
+          <div data-markerid="6" class="marker hidden">
+              <p class="marker-text">6</p>
+          </div>
+      </div>
+      <div id="markers-options">
+          <button class="remove-marker">&#10006;</button>
+      </div>
   </div>
   <div id="lists">
     <p>Här ska alla listor ligga</p>
