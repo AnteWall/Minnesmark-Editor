@@ -12,7 +12,8 @@ var mmEditor = (function () {
         radiusDistance,
         markerIndex,
         geoLocation,
-        createSearchField;
+        createSearchField,
+        positionIndexes;
 
     geoLocation = function(){
         /*
@@ -97,6 +98,7 @@ var mmEditor = (function () {
         initialLocation = new google.maps.LatLng(64.182464, -51.723343);
         markers = [];
         pathPositions = [];
+        positionIndexes = [];
         radiusDistance = 10;
         markerIndex = 0;
         var mapOptions = {
@@ -127,6 +129,7 @@ var mmEditor = (function () {
         });
         newMarker.markerIndex = markerIndex;
         markerIndex +=1;
+        positionIndexes.push(newMarker);
         pathPositions.push(newMarker.getPosition());
 
         return newMarker;
@@ -142,8 +145,41 @@ var mmEditor = (function () {
             editable:true
         };
         var poly = new google.maps.Polyline(polyOptions);
+        poly.isPolyline = true;
+        google.maps.event.addListener(poly, "mouseup", function(event) {
+            console.log(pathPositions.length);
+            console.log("Dropped new vertix!");
+            console.log("Event - edge: " +event.edge);
+            console.log("Event - vertex: " +event.vertex);
+            if(event.vertex === undefined){
+                console.log(event)
+                positionIndexes.splice(event.edge+1,0,poly);
+                reArrangePolyLines(event.edge);
+            }else if(event.edge === undefined){
+                //if(positionIndexes[i].isPolyline){
+                  //  positionIndexes[i].setPath(pathPositions);
+               // }
+                reDrawPolylines();
+            }
+        });
+
+        google.maps.event.addListener(poly, "dragstart", function(event) {
+            console.log("dsaokpdsakds");
+            reDrawPolylines();
+        });
+
+
         return poly;
     };
+
+    reArrangePolyLines = function(markerParentId){
+        markerIndex = positionIndexes.length;
+        for(var i = markerParentId+1; i < positionIndexes.length;i++){
+            if(positionIndexes[i].isPolyline === undefined && positionIndexes[i] != undefined){
+                positionIndexes[i].markerIndex +=1;
+            }
+        }
+    }
 
     createInfoWindow = function(){
         //Add infoWindow for marker
@@ -204,6 +240,7 @@ var mmEditor = (function () {
                 pathPositions[newMarker.markerIndex] = (newMarker.getPosition());
                 reDrawPolylines();
             });
+
             markers.push(newMarker);
             newMarker.setMap(map);
 
