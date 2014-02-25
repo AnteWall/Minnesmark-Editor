@@ -14,6 +14,9 @@ urlpatterns = patterns('',
     #Redirects to Login
     url(r'^$', RedirectView.as_view(url='/accounts/login'),name="index"),
 
+    #Redirects to Editor after login
+    url(r'^accounts/profile/', RedirectView.as_view(url='/editor')),
+
     # Examples:
     #url(r'^/$', 'minnesmark.views.home', name='home'),
     # url(r'^minnesmark/', include('minnesmark.foo.urls')),
