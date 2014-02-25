@@ -28,6 +28,9 @@
         <li><a href="/admin/approve">{% trans "Godkänn Konton" %}</a></li>
         <li><a href="/editor/">{% trans "Editor" %}</a></li> 
         {% endif %}
+	{% if user.is_authenticated %}
+	<li><a href="/accounts/logout">{% trans "Logga ut" %}</a></li>
+	{% endif %}
         {% endblock %}
         </ul>
       </nav>

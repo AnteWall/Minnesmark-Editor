@@ -31,7 +31,7 @@ header h1{
     color: white;
 }
 header nav{
-    width:700px;
+    width:900px;
     margin:auto;
 }
 header nav ul{
@@ -97,6 +97,8 @@ header nav li a{
     font-size:10pt;
     margin: 10px 0;
     padding:10px 20px;
+    width:40%;
+
     background: #f9c667; /* Old browsers */
     background: -moz-linear-gradient(top,  #f9c667 0%, #f79621 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f9c667), color-stop(100%,#f79621)); /* Chrome,Safari4+ */
@@ -167,6 +169,7 @@ width:40%;
 #approve_wrapper li form input[type="submit"]{
     padding:5px 10px;
     font-size:24pt;
+
     background: #b4e391; /* Old browsers */
     background: -moz-linear-gradient(top,  #b4e391 0%, #61c419 50%, #b4e391 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b4e391), color-stop(50%,#61c419), color-stop(100%,#b4e391)); /* Chrome,Safari4+ */
@@ -177,6 +180,7 @@ width:40%;
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391', endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
+
     border-radius: 10px;
     cursor:pointer;
 }
