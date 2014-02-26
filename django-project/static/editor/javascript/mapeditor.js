@@ -14,7 +14,9 @@ var mmEditor = (function () {
         geoLocation,
         createSearchField,
         polylines;
-
+    my.numberOfActiveMakers = function(){
+        return markers.length;
+    }
     geoLocation = function(){
         /*
          Geolocation for starting position
