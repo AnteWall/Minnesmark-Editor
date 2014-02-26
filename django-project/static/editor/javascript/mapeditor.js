@@ -8,12 +8,12 @@ var mmEditor = (function () {
         browserSupportFlag,
         initialLocation,
         markers,
-        pathPositions,
+        polyPaths,
         radiusDistance,
-        markerIndex,
+        pathIndex,
         geoLocation,
         createSearchField,
-        positionIndexes;
+        polylines;
 
     geoLocation = function(){
         /*
@@ -96,13 +96,10 @@ var mmEditor = (function () {
     my.initializeEditor = function(){
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(64.182464, -51.723343);
-        markers = [];
-        pathPositions = [];
-        positionIndexes = [];
+        resetMarkerSystem();
         radiusDistance = 10;
-        markerIndex = 0;
         var mapOptions = {
-            center: new google.maps.LatLng(59.319878, 18.065536),
+            center: initialLocation,
             zoom: 15,
             disableDefaultUI: true,
             zoomControl: true
@@ -112,6 +109,13 @@ var mmEditor = (function () {
 
         geoLocation();
         createSearchField();
+        google.maps.event.addListener(map, "zoom_changed", function(event) {
+            for(var i = 0; i < markers.length; i++){
+                polyPaths[markers[i].pathIndex] = markers[i].getPosition();
+            }
+            pathUpdate();
+        });
+
     };
 
     createMarker = function(){
@@ -127,10 +131,8 @@ var mmEditor = (function () {
             labelInBackground: false,
             animation: google.maps.Animation.DROP
         });
-        newMarker.markerIndex = markerIndex;
-        markerIndex +=1;
-        positionIndexes.push(newMarker);
-        pathPositions.push(newMarker.getPosition());
+        newMarker.pathIndex = polyPaths.length;
+        polyPaths.push(newMarker.getPosition());
 
         return newMarker;
     };
@@ -140,46 +142,27 @@ var mmEditor = (function () {
             strokeColor: '#000000',
             strokeOpacity: 1.0,
             strokeWeight: 3,
-            path: pathPositions,
+            path: polyPaths,
             map:map,
             editable:true
         };
         var poly = new google.maps.Polyline(polyOptions);
-        poly.isPolyline = true;
+
         google.maps.event.addListener(poly, "mouseup", function(event) {
-            console.log(pathPositions.length);
-            console.log("Dropped new vertix!");
-            console.log("Event - edge: " +event.edge);
-            console.log("Event - vertex: " +event.vertex);
-            if(event.vertex === undefined){
-                console.log(event)
-                positionIndexes.splice(event.edge+1,0,poly);
-                reArrangePolyLines(event.edge);
-            }else if(event.edge === undefined){
-                //if(positionIndexes[i].isPolyline){
-                  //  positionIndexes[i].setPath(pathPositions);
-               // }
-                reDrawPolylines();
+            if(event.edge !== undefined){
+                for(var i = 0; i < markers.length; i++){
+                    if(markers[i].pathIndex > event.edge){
+                        markers[i].pathIndex += 1;
+                    }
+                }
             }
+
         });
-
-        google.maps.event.addListener(poly, "dragstart", function(event) {
-            console.log("dsaokpdsakds");
-            reDrawPolylines();
+        google.maps.event.addListener(poly, "mouseout", function(event) {
+            pathUpdate();
         });
-
-
         return poly;
     };
-
-    reArrangePolyLines = function(markerParentId){
-        markerIndex = positionIndexes.length;
-        for(var i = markerParentId+1; i < positionIndexes.length;i++){
-            if(positionIndexes[i].isPolyline === undefined && positionIndexes[i] != undefined){
-                positionIndexes[i].markerIndex +=1;
-            }
-        }
-    }
 
     createInfoWindow = function(){
         //Add infoWindow for marker
@@ -210,17 +193,12 @@ var mmEditor = (function () {
         return false;
     }
 
-    reDrawPolylines = function(){
-        for(var i = 0; i < markers.length; i++){
-            markers[i].poly.setPath(pathPositions);
-        }
-    }
 
     my.addMarker = function(){
         var curMarkerCount = (markers.length+1);
         if(curMarkerCount <= 6){
             var newMarker = createMarker();
-            newMarker.poly = createPolyLine();
+            polylines.push(createPolyLine());
             newMarker.iw = createInfoWindow();
             newMarker.radius = createRadiusMarker();
 
@@ -237,8 +215,8 @@ var mmEditor = (function () {
             });
             //Event Listener for Drag (Marker)
             google.maps.event.addListener(newMarker, "drag", function(event) {
-                pathPositions[newMarker.markerIndex] = (newMarker.getPosition());
-                reDrawPolylines();
+                polyPaths[newMarker.pathIndex] = newMarker.getPosition();
+                pathUpdate();
             });
 
             markers.push(newMarker);
@@ -248,24 +226,43 @@ var mmEditor = (function () {
             $("#markers-wrapper").find("[data-markerid='" + curMarkerCount.toString() + "']").hide();
             $("#markers-wrapper").find("[data-markerid='" + (curMarkerCount+1).toString() + "']").removeClass('hidden');
         }
-        google.maps.event.addListener(map, "zoom_changed", function(event) {
-            reDrawPolylines();
-        });
+
+    };
+
+    pathUpdate = function(){
+        for(var i = 0; i < polylines.length; i++){
+            polylines[i].setPath(polyPaths);
+        }
+    }
+
+    resetMarkerSystem = function(){
+        markers = [];
+        polylines = [];
+        polyPaths = [];
     };
 
     my.removeMarker = function(){
-        markers[markers.length-1].setMap(null);
-        markers[markers.length-1].radius.setMap(null);
-        markers[markers.length-1].poly.setMap(null);
-        markers.pop();
-        pathPositions.pop();
-        markerIndex -= 1;
+        if(markers.length != 0){
+            markers[markers.length-1].setMap(null);
+            markers[markers.length-1].radius.setMap(null);
+            if(markers.length == 1){
+                for(var i = 0; i < polylines.length; i++){
+                    polylines[i].setMap(null);
+                }
+                resetMarkerSystem();
+            }else{
+                markers.pop();
 
-        //Change next marker to be placed indicator
-        $("#markers-wrapper").find("[data-markerid='" + (markers.length+1).toString() + "']").show();
-        $("#markers-wrapper").find("[data-markerid='" + (markers.length+2).toString() + "']").addClass('hidden');
-
-        reDrawPolylines();
+                var lastMarkerIndex = markers[markers.length-1].pathIndex;
+                while(polyPaths.length > lastMarkerIndex+1){
+                    polyPaths.pop();
+                }
+                pathUpdate();
+            }
+            //Change next marker to be placed indicator
+            $("#markers-wrapper").find("[data-markerid='" + (markers.length+1).toString() + "']").show();
+            $("#markers-wrapper").find("[data-markerid='" + (markers.length+2).toString() + "']").addClass('hidden');
+        }
     };
 
     return my;
