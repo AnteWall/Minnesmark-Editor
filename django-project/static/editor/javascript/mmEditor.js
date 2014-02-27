@@ -13,12 +13,18 @@ define(function () {
         markers,
         polyPaths,
         radiusDistance,
-        pathIndex,
         geoLocation,
         createSearchField,
         polylines;
+
     my.numberOfActiveMakers = function(){
         return markers.length;
+    }
+    my.getMarkers = function(){
+        return markers;
+    }
+    my.getPaths = function(){
+        return polyPaths;
     }
     geoLocation = function(){
         /*

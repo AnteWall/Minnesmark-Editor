@@ -1,5 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -78,3 +79,8 @@ def approveUser(request):
     
     users = User.objects.filter(is_active=False)
     return render(request,'admin/approve.html',{"users":users})
+
+
+@login_required
+def profile(request):
+    return render(request,'profile/profile.html')

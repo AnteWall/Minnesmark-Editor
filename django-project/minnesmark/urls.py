@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 from minnesmark.views import register_account
 from editor.views import render_page
-from minnesmark.views import approveUser
+from editor.views import save_route_to_database,createRoute
+from minnesmark.views import approveUser,profile
 from django.contrib.auth.views import login
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse_lazy
@@ -15,8 +16,8 @@ urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url='/accounts/login'),name="index"),
 
     #Redirects to Editor after login
-    url(r'^accounts/profile/', RedirectView.as_view(url='/editor')),
-
+    url(r'^accounts/profile/', profile),
+    url(r'^accounts/createRoute/', createRoute),
     # Examples:
     #url(r'^/$', 'minnesmark.views.home', name='home'),
     # url(r'^minnesmark/', include('minnesmark.foo.urls')),
@@ -34,7 +35,9 @@ urlpatterns = patterns('',
     url(r'^accounts/register$', register_account,name="register"),
 
     #url for the editor
-    url(r'^editor', render_page),
+    url(r'^editor/$', render_page),
+
+    url(r'^editor/saveRouteDB', save_route_to_database)
 
     # Testing
     #url(r'^date/$', current_datetime)

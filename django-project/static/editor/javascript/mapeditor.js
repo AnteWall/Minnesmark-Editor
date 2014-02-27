@@ -3,14 +3,17 @@
 
 
 $('document').ready(function(){
-    require(["/static/editor/javascript/mmEditor.js"], function(mmEditor) {
-        console.log(new google.maps.LatLng(50,50));
+    require(["/static/editor/javascript/mmEditor.js",
+             "/static/editor/javascript/mmSaveRoute.js"], function(mmEditor,mmSaveRoute) {
         mmEditor.initializeEditor();
         $('.remove-marker').on('click',function(){
             mmEditor.removeMarker();
         });
         $('.marker').on('click',function(){
             mmEditor.addMarker();
+        });
+        $('.saveRoute').on('click',function(){
+            mmSaveRoute.saveToDatabase(mmEditor.getMarkers(),mmEditor.getPaths());
         });
     });
 
