@@ -99,12 +99,25 @@ var mmEditor = (function () {
         radiusDistance = 10;
         var mapOptions = {
             center: initialLocation,
+            mapTypeControlOptions: {
+                mapTypeId: [
+                google.maps.MapTypeId.ROADMAP,
+                google.maps.MapTypeId.TERRAIN,
+                google.maps.MapTypeId.HYBRID,
+                google.maps.MapTypeId.SATELLITE
+                ],
+                position: google.maps.ControlPosition.BOTTOM_CENTER,
+                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            },
+            panControl: false,
+            streetViewControl: false,
             zoom: 15,
-            disableDefaultUI: true,
-            zoomControl: true
+            zoomControl: true,
+            zoomOptions: {
+                position: google.maps.ControlPosition.LEFT_TOP
+            }
         };
-        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions,  {
-            mapTypeId: google.maps.MapTypeId.ROADMAP});
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
         geoLocation();
         createSearchField();
