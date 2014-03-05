@@ -7,6 +7,7 @@ var mmEditor = (function () {
         map,
         browserSupportFlag,
         initialLocation,
+        searchMarkers,
         markers,
         polyPaths,
         radiusDistance,
@@ -51,6 +52,7 @@ var mmEditor = (function () {
 
         ////// GOOGLE IMPLEMENTATION \\\\\\\
         // Create the search box and link it to the UI element.
+
         var input = /** @type {HTMLInputElement} */(
             document.getElementById('pac-input'));
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -58,34 +60,28 @@ var mmEditor = (function () {
         var searchBox = new google.maps.places.SearchBox(
             /** @type {HTMLInputElement} */(input));
 
-        // [START region_getplaces]
         // Listen for the event fired when the user selects an item from the
         // pick list. Retrieve the matching places for that item.
         google.maps.event.addListener(searchBox, 'places_changed', function() {
-            var places = searchBox.getPlaces();
+            var currentZoom = map.getZoom();
 
-            for (var i = 0, marker; marker = markers[i]; i++) {
-                marker.setMap(null);
+            var place = searchBox.getPlaces()[0];
+
+            for (var i = 0, searchMarker; searchMarker = searchMarkers[i]; i++) {
+                searchMarker.setMap(null);
             }
 
-            // For each place, get the icon, place name, and location.
+            var searchMarker = createSearchMarker(place);
+            searchMarkers = [];
+            searchMarkers.push(searchMarker);
+
             var bounds = new google.maps.LatLngBounds();
-            for (var i = 0, place; place = places[i]; i++) {
-                var image = {
-                    url: place.icon,
-                    size: new google.maps.Size(71, 71),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(25, 25)
-                };
-
-                bounds.extend(place.geometry.location);
-            }
+            bounds.extend(place.geometry.location);
 
             map.fitBounds(bounds);
-            map.setZoom(15); // Set zoom when search
+            map.setZoom(currentZoom);
+
         });
-        // [END region_getplaces]
 
         // Bias the SearchBox results towards places that are within the bounds of the
         // current map's viewport.
@@ -99,6 +95,7 @@ var mmEditor = (function () {
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(64.182464, -51.723343);
         resetMarkerSystem();
+        resetSearchSystem();
         radiusDistance = 10;
         var mapOptions = {
             center: initialLocation,
@@ -118,6 +115,27 @@ var mmEditor = (function () {
             pathUpdate();
         });
 
+    };
+
+    createSearchMarker = function(place){
+
+        var customImage = "/static/editor/img/place.png"
+
+        //google.maps.Icon object:
+        var image = {
+                url: customImage,
+                size: new google.maps.Size(56, 43),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(28, 26)
+            };
+
+        var newSearchMarker = new google.maps.Marker({
+        map: map,
+        icon: image,
+        position: place.geometry.location
+        });
+
+        return newSearchMarker;
     };
 
     createMarker = function(){
@@ -195,7 +213,6 @@ var mmEditor = (function () {
         return false;
     }
 
-
     my.addMarker = function(){
         var curMarkerCount = (markers.length+1);
         if(curMarkerCount <= 6){
@@ -241,6 +258,10 @@ var mmEditor = (function () {
         markers = [];
         polylines = [];
         polyPaths = [];
+    };
+
+    resetSearchSystem = function(){
+        searchMarkers = [];
     };
 
     my.removeMarker = function(){
