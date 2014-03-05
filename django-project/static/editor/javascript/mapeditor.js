@@ -5,6 +5,8 @@ var mmEditor = (function () {
         },
     //Private Variables/functions
         map,
+        failedGeoLocationInitialLocation,
+        unsupportedGeoLocationInitialLocation,
         browserSupportFlag,
         initialLocation,
         searchMarkers,
@@ -32,6 +34,7 @@ var mmEditor = (function () {
                 handleNoGeolocation(browserSupportFlag);
             });
         }
+
         // Browser doesn't support Geolocation
         else {
             browserSupportFlag = false;
@@ -41,8 +44,10 @@ var mmEditor = (function () {
         function handleNoGeolocation(errorFlag) {
             if (errorFlag == true) {
                 console.log("Geolocation service failed.");
+                initialLocation = failedGeoLocationInitialLocation;
             } else {
                 console.log("Your browser doesn't support geolocation. We've placed you in Stockholm.");
+                initialLocation = unsupportedGeoLocationInitialLocation;
             }
             map.setCenter(initialLocation);
         }
@@ -93,7 +98,8 @@ var mmEditor = (function () {
 
     my.initializeEditor = function(){
         browserSupportFlag =  new Boolean();
-        initialLocation = new google.maps.LatLng(64.182464, -51.723343);
+        failedGeoLocationInitialLocation =  new google.maps.LatLng(59.32893, 18.06491); // Stockholm
+        unsupportedGeoLocationInitialLocation =  new google.maps.LatLng(59.32893, 18.06491); // Stockholm
         resetMarkerSystem();
         resetSearchSystem();
         radiusDistance = 10;
