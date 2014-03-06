@@ -193,3 +193,12 @@ span.italic{
 .clearfix{
     clear:both;
 }
+
+.remove-button{
+    background:#ff8e03;
+    padding: 5px;
+    border-bottom: 2px solid #cc7202;
+    font-weight:bold;
+    font-size: 11pt;
+    color: #FFF;
+}

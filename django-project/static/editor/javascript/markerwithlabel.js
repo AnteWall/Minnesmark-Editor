@@ -117,7 +117,7 @@ MarkerLabel_.prototype.onAdd = function () {
   var cStartPosition;
   var cStartCenter;
   // Constants:
-  var cRaiseOffset = 20;
+  var cRaiseOffset = 0;
   var cDraggingCursor = "url(" + this.handCursorURL_ + ")";
 
   // Stops all processing of an event.
