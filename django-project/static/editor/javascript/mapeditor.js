@@ -202,9 +202,10 @@ var mmEditor = (function () {
                     }
                 }
             }
-
         });
         google.maps.event.addListener(poly, "mouseout", function(event) {
+            collisionControll();
+
             pathUpdate();
         });
 
