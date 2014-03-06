@@ -1,0 +1,15 @@
+function checkStation(){
+    str=document.getElementById('upfile').value.toUpperCase();
+    suffix1=".JPG";
+    suffix2=".JPEG";
+    suffix3=".PNG";
+    suffix4=".MOV"
+    if(!(	str.indexOf(suffix1, str.length - suffix1.length) !== -1 ||
+		str.indexOf(suffix2, str.length - suffix2.length) !== -1 ||
+		str.indexOf(suffix3, str.length - suffix3.length) !== -1 ||
+		str.indexOf(suffix4, str.length - suffix4.length) !== -1 ))
+    {
+        alert('File type not allowed,\nAllowed file: *.jpg,*.jpeg,*.png,*.mov');
+        document.getElementById('fileToUpload').value='';
+    }
+}

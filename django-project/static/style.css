@@ -193,3 +193,11 @@ span.italic{
 .clearfix{
     clear:both;
 }
+
+#upload-station{
+    padding: 50px;
+}
+
+#upload-marker{
+    padding: 50px;
+}
