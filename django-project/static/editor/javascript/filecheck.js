@@ -1,17 +1,17 @@
 var statlist1 = [];
 var statlist2 = [];
 var statlist3 = [];
-var statlist4 = []
-var statlist5 = []
-var statlist6 = []
-var statarray = [statlist1, statlist2, statlist3, statlist4, statlist5, statlist6];
+var statlist4 = [];
+var statlist5 = [];
+var statlist6 = [];
+var statarray = [statlist1, statlist2, statlist3, statlist4, statlist5, statlist6 ];
 
-var marklist1 = [];
-var marklist2 = [];
-var marklist3 = [];
-var marklist4 = [];
-var marklist5 = [];
-var marklist6 = [];
+var marklist1 = ["marklist1"];
+var marklist2 = ["marklist2"];
+var marklist3 = ["marklist3"];
+var marklist4 = ["marklist4"];
+var marklist5 = ["marklist5"];
+var marklist6 = ["marklist6"];
 var markarray = [marklist1, marklist2, marklist3, marklist4, marklist5, marklist6 ];
 
 function checkStation(){
@@ -35,7 +35,9 @@ function checkStation(){
     {
         var index = document.getElementById('statlist').value;
         add_li("statul", str, statarray[index-1]);
+
     }
+
 }
 
 
@@ -48,11 +50,6 @@ function checkMarker(){
     {
         alert('File type not allowed,\nAllowed file: *.obj');
         document.getElementById('markfile').value='';
-    }
-    else
-    {
-        var index = document.getElementById('marklist').value;
-        add_li("markul", str, markarray[index-1]);
     }
 }
 
@@ -79,30 +76,38 @@ function dropdown(name) {
         {
             list.add(option); // Internet Explorer only
         }
-     }
+    }
+
 }
 
 function add_li(list, name, array) {
-    array.push("<input type='checkbox' onclick='isChecked(this)' class='unchecked'>" + name);
-    printarray(list);
+
+    /*var list = document.getElementById(list);
+    var li = document.createElement("li");
+    var div = document.createElement("div");
+
+    var button = document.createElement("input");
+    button.type = "checkbox";
+
+    div.innerHTML += "<input type='checkbox'>";
+    div.innerHTML += " " + name;
+
+    li.appendChild(div);
+
+    list.appendChild(li);*/
+
+
+    array.push("<input type='checkbox'> " + name + "<input type='button' value='ta bort' onclick='remove_file("+"["+array+"]"+")'>");
+
+    printarray(array, list);
+
+
+
 }
 
-function isChecked(elem)
-{
-    if (elem.className == "unchecked")
-    {
-        elem.className = "checked";
-    }
-    else
-    {
-        elem.className = "unchecked";
-    }
-}
+function printarray(array, list) {
 
-function printarray(listname) {
-
-    var list = document.getElementById(listname);
-    var array = getarray(listname);
+    var list = document.getElementById("statul");
 
     if(list){
         while(list.firstChild){
@@ -110,45 +115,30 @@ function printarray(listname) {
         }
     }
 
+    alert(array);
+
+
+
+
     for(var i = 0; i < array.length; ++i) {
-        var li = document.createElement("li");
-        var div = document.createElement("div");
-        div.innerHTML = array[i];
-        li.appendChild(div);
-        list.appendChild(li);
+        if(array[i] != ''){
+            alert(array[i]);
+            var li = document.createElement("li");
+            var div = document.createElement("div");
+            div.innerHTML = array[i];
+            li.appendChild(div);
+            list.appendChild(li);
+        }
     }
+
+    //li.appendChild(div);
+    //list.appendChild(li);
 }
 
-
-function getarray(listname){
-
-    var array = [];
-
-    if (listname == "statul")
-    {
-        var choosen = document.getElementById('statlist').value;
-        array = statarray[choosen-1];
-    }
-    else if (listname == "markul")
-    {
-        var choosen = document.getElementById('marklist').value;
-        array = markarray[choosen-1];
-    }
-    else
-    {
-        alert("Something went wrong, you idiot....");
-        return -1;
-    }
-
-return array;
-
-}
-
-function statoption() {
-
-    var array = getarray("statul");
-
-    for(var )
-
+function remove_file(arr){
+  // -- if(arr.length > 0){
+  // alert(arr[1]);
+    //}
+    //arr[pos] = '';
 
 }
