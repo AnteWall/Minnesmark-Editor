@@ -7,8 +7,8 @@ var mmEditor = (function () {
         map,
         browserSupportFlag,
         initialLocation,
-        searchMarkers,
-        markers,
+        searchPositions,
+        stations,
         polyPaths,
         radiusDistance,
         pathIndex,
@@ -17,8 +17,8 @@ var mmEditor = (function () {
         polylines,
         optionsWindow,
         collisionWindows;
-    my.numberOfActiveMakers = function(){
-        return markers.length;
+    my.numberOfActiveStations = function(){
+        return stations.length;
     }
     geoLocation = function(){
         /*
@@ -69,13 +69,13 @@ var mmEditor = (function () {
 
             var place = searchBox.getPlaces()[0];
 
-            for (var i = 0, searchMarker; searchMarker = searchMarkers[i]; i++) {
-                searchMarker.setMap(null);
+            for (var i = 0, searchPosition; searchPosition = searchPositions[i]; i++) {
+                searchPosition.setMap(null);
             }
 
-            var searchMarker = createSearchMarker(place);
-            searchMarkers = [];
-            searchMarkers.push(searchMarker);
+            var searchPosition = createSearchPosition(place);
+            searchPositions = [];
+            searchPositions.push(searchPosition);
 
             var bounds = new google.maps.LatLngBounds();
             bounds.extend(place.geometry.location);
@@ -96,12 +96,12 @@ var mmEditor = (function () {
     my.initializeEditor = function(){
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(64.182464, -51.723343);
-        resetMarkerSystem();
+        resetTrailSystem();
         resetSearchSystem();
         radiusDistance = 10;
 
         optionsWindow = new google.maps.InfoWindow({
-            content: "<div class='delMarker'><button class='remove-button' data-removeIndex=''>Ta bort</button></div>"
+            content: "<div class='delStation'><button class='remove-button' data-removeIndex=''>Ta bort</button></div>"
         });
 
         var mapOptions = {
@@ -129,15 +129,15 @@ var mmEditor = (function () {
         geoLocation();
         createSearchField();
         google.maps.event.addListener(map, "zoom_changed", function(event) {
-            for(var i = 0; i < markers.length; i++){
-                polyPaths[markers[i].pathIndex] = markers[i].getPosition();
+            for(var i = 0; i < stations.length; i++){
+                polyPaths[stations[i].pathIndex] = stations[i].getPosition();
             }
             pathUpdate();
         });
 
     };
 
-    createSearchMarker = function(place){
+    createSearchPosition = function(place){
 
         var customImage = "/static/editor/img/place.png"
 
@@ -149,38 +149,38 @@ var mmEditor = (function () {
                 anchor: new google.maps.Point(28, 26)
             };
 
-        var newSearchMarker = new google.maps.Marker({
+        var newSearchPosition = new google.maps.Marker({
         map: map,
         icon: image,
         position: place.geometry.location
         });
 
-        return newSearchMarker;
+        return newSearchPosition;
     };
 
-    createMarker = function(){
+    createStation = function(){
 
         var customImage = {
-            url: '/static/editor/img/station.png',
+            url: '/static/editor/img/station-on-map.png',
             // The origin for this image is 0,0.
             origin: new google.maps.Point(0,0),
             // The anchor for this image is the base of the flagpole at 0,32.
             anchor: new google.maps.Point(21, 22)
         };
-        var newMarker = new MarkerWithLabel({
+        var newStation = new MarkerWithLabel({
             position: map.getCenter(),
             draggable:true,
             icon:customImage,
-            labelContent: (markers.length+1).toString(),
+            labelContent: (stations.length+1).toString(),
             labelAnchor: new google.maps.Point(3, 40),
             labelClass: "labels", // the CSS class for the label
             labelInBackground: false,
             animation: google.maps.Animation.DROP
         });
-        newMarker.pathIndex = polyPaths.length;
-        polyPaths.push(newMarker.getPosition());
+        newStation.pathIndex = polyPaths.length;
+        polyPaths.push(newStation.getPosition());
 
-        return newMarker;
+        return newStation;
     };
 
     createPolyLine = function(){
@@ -196,9 +196,9 @@ var mmEditor = (function () {
 
         google.maps.event.addListener(poly, "mouseup", function(event) {
             if(event.edge !== undefined){
-                for(var i = 0; i < markers.length; i++){
-                    if(markers[i].pathIndex > event.edge){
-                        markers[i].pathIndex += 1;
+                for(var i = 0; i < stations.length; i++){
+                    if(stations[i].pathIndex > event.edge){
+                        stations[i].pathIndex += 1;
                     }
                 }
             }
@@ -219,14 +219,14 @@ var mmEditor = (function () {
     };
 
     createCollisionWindow = function(){
-        //Add infoWindow for marker
+        //Add infoWindow for station
         var iw = new google.maps.InfoWindow({
-            content: "<div class='infoMarker'>Punkterna är placerade för nära varandra.</div>"
+            content: "<div class='infoStation'>Punkterna är placerade för nära varandra.</div>"
         });
         return iw;
     };
 
-    createRadiusMarker = function(){
+    createRadiusStation = function(){
         return new google.maps.Circle({
             map: map,
             radius: radiusDistance,    // Meters
@@ -259,7 +259,7 @@ var mmEditor = (function () {
     };
 
     addOptionsWindow = function(latLng,index){
-        optionsWindow.setContent("<div class='delMarker'><button class='remove-button' data-removeIndex='"+index+"'>Ta bort</button></div>");
+        optionsWindow.setContent("<div class='delStation'><button class='remove-button' data-removeIndex='"+index+"'>Ta bort</button></div>");
         optionsWindow.setPosition(latLng);
         optionsWindow.open(map);
         $('.remove-button').on('click',function(){
@@ -267,55 +267,55 @@ var mmEditor = (function () {
         })
     }
 
-    my.addMarker = function(){
-        var curMarkerCount = (markers.length+1);
-        if(curMarkerCount <= 6){
-            var newMarker = createMarker();
+    my.addStation = function(){
+        var curStationCount = (stations.length+1);
+        if(curStationCount <= 6){
+            var newStation = createStation();
             polylines.push(createPolyLine());
-            newMarker.radius = createRadiusMarker();
+            newStation.radius = createRadiusStation();
 
-            newMarker.radius.bindTo('center', newMarker, 'position');
-            //Event Listener for DragEnd(Drop) (Marker)
-            google.maps.event.addListener(newMarker, "dragend", function(event) {
-                if(markers.length > 1){
+            newStation.radius.bindTo('center', newStation, 'position');
+            //Event Listener for DragEnd(Drop) (Station)
+            google.maps.event.addListener(newStation, "dragend", function(event) {
+                if(stations.length > 1){
                     collisionControll();
                 }
             });
-            //Event Listener for Drag (Marker)
-            google.maps.event.addListener(newMarker, "drag", function(event) {
-                polyPaths[newMarker.pathIndex] = newMarker.getPosition();
+            //Event Listener for Drag (Station)
+            google.maps.event.addListener(newStation, "drag", function(event) {
+                polyPaths[newStation.pathIndex] = newStation.getPosition();
                 pathUpdate();
             });
-            google.maps.event.addListener(newMarker, "click", function(event) {
-                addOptionsWindow(event.latLng,newMarker.pathIndex);
+            google.maps.event.addListener(newStation, "click", function(event) {
+                addOptionsWindow(event.latLng,newStation.pathIndex);
             });
-            markers.push(newMarker);
-            newMarker.setMap(map);
+            stations.push(newStation);
+            newStation.setMap(map);
             //collisionControll();
-            //Change next marker to be placed indicator
-            $("#markers-wrapper").find("[data-markerid='" + curMarkerCount.toString() + "']").hide();
-            $("#markers-wrapper").find("[data-markerid='" + (curMarkerCount+1).toString() + "']").removeClass('hidden');
+            //Change next Station to be placed indicator
+            $("#stations-wrapper").find("[data-stationid='" + curStationCount.toString() + "']").hide();
+            $("#stations-wrapper").find("[data-stationid='" + (curStationCount+1).toString() + "']").removeClass('hidden');
         }
 
     };
 
     my.removePoint = function(index){
         polyPaths.splice(index,1);
-        for(var i = 0; i < markers.length; i++){
-            if(markers[i].pathIndex == index){
-                markers[i].setMap(null);
-                markers[i].radius.setMap(null);
-                markers.splice(i,1);
+        for(var i = 0; i < stations.length; i++){
+            if(stations[i].pathIndex == index){
+                stations[i].setMap(null);
+                stations[i].radius.setMap(null);
+                stations.splice(i,1);
             }
-            if(markers[i] != undefined){
-                if(markers[i].pathIndex > index){
-                    markers[i].pathIndex -=1;
+            if(stations[i] != undefined){
+                if(stations[i].pathIndex > index){
+                    stations[i].pathIndex -=1;
                 }
             }
         }
         optionsWindow.close();
         pathUpdate();
-        updateMarkerLabel();
+        updateLabels();
         collisionControll();
     };
 
@@ -325,47 +325,47 @@ var mmEditor = (function () {
         }
     };
 
-    updateMarkerLabel = function(){
-        for(var i = 0; i < markers.length; i++){
-            markers[i].labelContent = i+1;
-            markers[i].label.draw();
+    updateLabels = function(){
+        for(var i = 0; i < stations.length; i++){
+            stations[i].labelContent = i+1;
+            stations[i].label.draw();
         }
     }
 
 
-    resetMarkerSystem = function(){
-        markers = [];
+    resetTrailSystem = function(){
+        stations = [];
         polylines = [];
         polyPaths = [];
         collisionWindows = [];
     };
 
     resetSearchSystem = function(){
-        searchMarkers = [];
+        searchPositions = [];
     };
 
-    my.removeMarker = function(){
-        if(markers.length != 0){
-            markers[markers.length-1].setMap(null);
-            markers[markers.length-1].radius.setMap(null);
-            if(markers.length == 1){
+    my.removeStation = function(){
+        if(stations.length != 0){
+            stations[stations.length-1].setMap(null);
+            stations[stations.length-1].radius.setMap(null);
+            if(stations.length == 1){
                 for(var i = 0; i < polylines.length; i++){
                     polylines[i].setMap(null);
                 }
-                resetMarkerSystem();
+                resetTrailSystem();
             }else{
-                markers.pop();
+                stations.pop();
 
-                var lastMarkerIndex = markers[markers.length-1].pathIndex;
-                while(polyPaths.length > lastMarkerIndex+1){
+                var lastStationIndex = stations[stations.length-1].pathIndex;
+                while(polyPaths.length > lastStationIndex+1){
                     polyPaths.pop();
                 }
                 pathUpdate();
-                updateMarkerLabel();
+                updateLabels();
             }
-            //Change next marker to be placed indicator
-            $("#markers-wrapper").find("[data-markerid='" + (markers.length+1).toString() + "']").show();
-            $("#markers-wrapper").find("[data-markerid='" + (markers.length+2).toString() + "']").addClass('hidden');
+            //Change next station to be placed indicator
+            $("#stations-wrapper").find("[data-stationid='" + (stations.length+1).toString() + "']").show();
+            $("#station-wrapper").find("[data-stationid='" + (stations.length+2).toString() + "']").addClass('hidden');
         }
     };
 
@@ -375,11 +375,11 @@ var mmEditor = (function () {
 
 $('document').ready(function(){
     mmEditor.initializeEditor();
-    $('.remove-marker').on('click',function(){
-        mmEditor.removeMarker();
+    $('.remove-station').on('click',function(){
+        mmEditor.removeStation();
     });
-    $('.marker').on('click',function(){
-        mmEditor.addMarker();
+    $('.station').on('click',function(){
+        mmEditor.addStation();
     });
 
 });
