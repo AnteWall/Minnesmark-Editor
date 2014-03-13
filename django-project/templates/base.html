@@ -25,7 +25,7 @@
         <ul>
 	{% block header %}
 	{% if user.is_superuser %}
-	<li><a href="{% url 'index' %}">{% trans "Hem" %}</a></li>
+	      <li><a href="/accounts/profile">{% trans "Hem" %}</a></li>
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         <li><a href="/admin/approve">{% trans "Godkänn Konton" %}</a></li>
         <li><a href="/editor/">{% trans "Editor" %}</a></li> 

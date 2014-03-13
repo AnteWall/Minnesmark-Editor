@@ -8,9 +8,10 @@ $('document').ready(function(){
         $('.station').on('click',function(){
             mmEditor.addStation();
         });
-        $('.saveRoute').on('click',function(){
-            mmSaveRoute.saveToDatabase(mmEditor.getStations(),mmEditor.getPaths());
-        });
+        /* Could be used with ajax instead of form in profile.html
+        $('.createRoute').on('click',function(){
+            mmSaveRoute.createRoute($('#route_name').val());
+        });*/
     });
 
 });

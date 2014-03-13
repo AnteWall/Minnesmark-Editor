@@ -56,7 +56,9 @@ define(function(){
         }
         return paths_data;
     }
-    my.saveToDatabase = function(markers,paths){
+
+    /* Could be used with code in mapeditor.js
+    my.createRoute = function(name){
         var csrftoken = getCookie('csrftoken');
 
         $.ajaxSetup({
@@ -68,29 +70,28 @@ define(function(){
             }
         });
 
-        var route_data = {};
-        route_data["markers"] = getMarkersData(markers);
-        route_data["points"] = getPathData(paths);
+        var route_data = {route_name:name};
+
         var request = $.ajax({
-            url: "/editor/saveRouteDB",
+            url: "/accounts/createRouteDB",
             type: "POST",
-            data: JSON.stringify(route_data),
-            datatype:JSON,
-            contentType: "application/json;charset=utf-8",
+            data: route_data,
 
             success: function(res){
-                console.log(res);
+                console.log("SUCCESS");
+                //console.log(res);
             }
         });
 
         request.done(function(msg) {
+            console.log("DONE");
             //console.log(msg);
         });
 
         request.fail(function(jqXHR, textStatus) {
             alert( "Request failed: " + textStatus );
         });
-    };
+    };*/
 
 
     return my;

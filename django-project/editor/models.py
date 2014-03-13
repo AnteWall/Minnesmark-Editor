@@ -9,7 +9,7 @@ class Routes(models.Model):
     name = models.CharField(max_length=40)
     active = models.BooleanField(default=False)
 
-class Markers(models.Model):
+class Stations(models.Model):
     route = models.ForeignKey(Routes, null=True)
     latitude = models.DecimalField(max_digits=30, decimal_places=25)
     longitude = models.DecimalField(max_digits=30, decimal_places=25)
@@ -23,7 +23,7 @@ class Points(models.Model):
     index = models.IntegerField()
 
 class Media(models.Model):
-    marker = models.ForeignKey(Markers)
+    station = models.ForeignKey(Stations)
     name = models.CharField(max_length=40)
     path = models.CharField(max_length=256)
     size = models.IntegerField()

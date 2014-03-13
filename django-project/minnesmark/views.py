@@ -1,9 +1,10 @@
 # Create your views here.
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
+from editor.models import Routes
 
 import datetime
 
@@ -78,3 +79,17 @@ def approveUser(request):
     
     users = User.objects.filter(is_active=False)
     return render(request,'admin/approve.html',{"users":users})
+
+@login_required
+def profile(request):
+    return render(request,'profile/profile.html')
+
+@login_required
+def create_route_db(request):
+    try:
+        route = Routes.objects.get(user_id=request.user.id, name=request.POST["route_name"])
+        return redirect('/editor/?id='+str(route.id))
+    except Routes.DoesNotExist:
+        route = Routes(user_id=request.user.id, name=request.POST["route_name"])
+        route.save()
+    return redirect('/editor/?id='+str(route.id))
