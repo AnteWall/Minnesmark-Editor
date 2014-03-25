@@ -177,6 +177,7 @@ var mmEditor = (function () {
             labelInBackground: false,
             animation: google.maps.Animation.DROP
         });
+        collisionControll(newStation);
         newStation.pathIndex = polyPaths.length;
         polyPaths.push(newStation.getPosition());
 
@@ -235,24 +236,39 @@ var mmEditor = (function () {
         });
     };
 
-    collisionControll = function(){
-        for(var i = 0; i < collisionWindows.length; i++){
-            collisionWindows[i].close();
-            collisionWindows[i].setMap(null);
-        }
-        collisionWindows = [];
-        for(var i = 0; i < polyPaths.length;i++){
-            for(var j = i+1; j < polyPaths.length; j++){
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(polyPaths[j],polyPaths[i]);
-                if(distance < radiusDistance*2){
-                    var iw = createCollisionWindow();
-                    var jw = createCollisionWindow();
-                    iw.setPosition(polyPaths[i]);
-                    jw.setPosition(polyPaths[j]);
-                    iw.open(map);
-                    jw.open(map);
-                    collisionWindows.push(iw);
-                    collisionWindows.push(jw);
+    collisionControll = function(newStation){
+        if(typeof(newStation)==='object') {
+            console.log("sdfkjsl");
+            for(var i = 0; i< stations.length; i++) {
+                var distance = google.maps.geometry.spherical.computeDistanceBetween(stations[i].getPosition(),newStation.getPosition());
+
+                if (distance < radiusDistance*2) {
+                    console.log(distance);
+                    //0.00042 is about the same as radius*2 (and the answer to life, the universe and everything)
+                    newStation.setPosition(new google.maps.LatLng(newStation.getPosition().lat(), stations[i].getPosition().lng()+0.00042));
+                    collisionControll(newStation);
+                }
+            }
+        } else {
+
+            for(var i = 0; i < collisionWindows.length; i++){
+                collisionWindows[i].close();
+                collisionWindows[i].setMap(null);
+            }
+            collisionWindows = [];
+            for(var i = 0; i < polyPaths.length;i++){
+                for(var j = i+1; j < polyPaths.length; j++){
+                    var distance = google.maps.geometry.spherical.computeDistanceBetween(polyPaths[j],polyPaths[i]);
+                    if(distance < radiusDistance*2){
+                        var iw = createCollisionWindow();
+                        var jw = createCollisionWindow();
+                        iw.setPosition(polyPaths[i]);
+                        jw.setPosition(polyPaths[j]);
+                        iw.open(map);
+                        jw.open(map);
+                        collisionWindows.push(iw);
+                        collisionWindows.push(jw);
+                    }
                 }
             }
         }
