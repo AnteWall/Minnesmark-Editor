@@ -177,6 +177,7 @@ var mmEditor = (function () {
             labelInBackground: false,
             animation: google.maps.Animation.DROP
         });
+        collisionControll(newStation);
         newStation.pathIndex = polyPaths.length;
         polyPaths.push(newStation.getPosition());
 
@@ -204,8 +205,6 @@ var mmEditor = (function () {
             }
         });
         google.maps.event.addListener(poly, "mouseout", function(event) {
-            collisionControll();
-
             pathUpdate();
         });
 
@@ -218,14 +217,6 @@ var mmEditor = (function () {
         return poly;
     };
 
-    createCollisionWindow = function(){
-        //Add infoWindow for station
-        var iw = new google.maps.InfoWindow({
-            content: "<div class='infoStation'>Punkterna är placerade för nära varandra.</div>"
-        });
-        return iw;
-    };
-
     createRadiusStation = function(){
         return new google.maps.Circle({
             map: map,
@@ -235,25 +226,15 @@ var mmEditor = (function () {
         });
     };
 
-    collisionControll = function(){
-        for(var i = 0; i < collisionWindows.length; i++){
-            collisionWindows[i].close();
-            collisionWindows[i].setMap(null);
-        }
-        collisionWindows = [];
-        for(var i = 0; i < polyPaths.length;i++){
-            for(var j = i+1; j < polyPaths.length; j++){
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(polyPaths[j],polyPaths[i]);
-                if(distance < radiusDistance*2){
-                    var iw = createCollisionWindow();
-                    var jw = createCollisionWindow();
-                    iw.setPosition(polyPaths[i]);
-                    jw.setPosition(polyPaths[j]);
-                    iw.open(map);
-                    jw.open(map);
-                    collisionWindows.push(iw);
-                    collisionWindows.push(jw);
-                }
+    collisionControll = function(station){
+        for(var i = 0; i< stations.length; i++) {
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(stations[i].getPosition(),station.getPosition());
+            if (station.labelContent !== stations[i].labelContent && distance < radiusDistance*2) {
+                //0.00042 is about the same as radius*2 (and the answer to life, the universe and everything)
+                station.setPosition(new google.maps.LatLng(station.getPosition().lat(), stations[i].getPosition().lng()+0.00042));
+                polyPaths[station.pathIndex] = station.getPosition();
+                pathUpdate();
+                collisionControll(station);
             }
         }
     };
@@ -278,7 +259,7 @@ var mmEditor = (function () {
             //Event Listener for DragEnd(Drop) (Station)
             google.maps.event.addListener(newStation, "dragend", function(event) {
                 if(stations.length > 1){
-                    collisionControll();
+                    collisionControll(newStation);
                 }
             });
             //Event Listener for Drag (Station)
@@ -291,7 +272,6 @@ var mmEditor = (function () {
             });
             stations.push(newStation);
             newStation.setMap(map);
-            //collisionControll();
             //Change next Station to be placed indicator
             $("#stations-wrapper").find("[data-stationid='" + curStationCount.toString() + "']").hide();
             $("#stations-wrapper").find("[data-stationid='" + (curStationCount+1).toString() + "']").removeClass('hidden');
@@ -316,7 +296,7 @@ var mmEditor = (function () {
         optionsWindow.close();
         pathUpdate();
         updateLabels();
-        collisionControll();
+        //collisionControll(); //TODO fix when fixing swing points bug
     };
 
     pathUpdate = function(){
