@@ -112,7 +112,7 @@ button.green:disabled{
 .btn.square{
     width: 30px;
     font-size:16pt;
-    padding:3px 4px;
+
 }
 
 .btn.round{
@@ -122,13 +122,34 @@ button.green:disabled{
     width: 30px;
     height:30px;
     border: none;
-    padding: 3px 4px;
+    line-height:30px;
     font-size:16pt;
+}
+.btn.round:focus{
+    border:none;
+}
+
+.btn.round.textfix{
+    padding: 0 2px;
 }
 a{
     text-decoration: none;
     color: #1dc5f5;
 }
 
-
-
+.text-center{
+    text-align: center;
+}
+.inline{
+    display: inline-block;
+}
+.typcn:before{
+    width:auto!important;
+    text-align: center;
+}
+.rotate90{
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    writing-mode: tb-rl;
+}
