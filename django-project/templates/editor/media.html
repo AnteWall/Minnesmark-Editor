@@ -8,16 +8,10 @@
     <link rel="stylesheet"
           href="/static/editor/editor.css"/>
 
-    <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true&libraries=geomentry&libraries=places">
-    </script>
-    <script type="text/javascript" src="/static/editor/javascript/markerwithlabel.js"></script>
-
-    <script type="text/javascript"
-            src="/static/editor/javascript/mapeditor.js">
-    </script>
     <script type="text/javascript" src="/static/editor/javascript/editor.js"></script>
-
+    <link href="/static/editor/css/no-theme/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+    <script src="/static/editor/javascript/jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="/static/editor/javascript/general.js"></script>
 
 {% endblock %}
 
@@ -53,12 +47,12 @@
                         <ul class="tour-menu">
                             <li class="clearfix">
                                 <p>1. Bestäm namn och startmedia</p>
-                                <a href="/editor/general" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+                                <a href="/editor/general" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
 
                             </li>
                             <li class="clearfix">
                                 <p>2. Lägg till stationer på kartan</p>
-                                <a href="/editor/stations" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
+                                <a href="/editor/stations" class="editor-btn "><span class="typcn typcn-chevron-right"></span></a>
 
                             </li>
                             <li class="clearfix">
@@ -79,12 +73,12 @@
                         <ul class="tour-menu">
                             <li class="clearfix">
                                 <p>1. Bestäm namn och startmedia</p>
-                                <a href="/editor/general" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+                                <a href="/editor/general" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
 
                             </li>
                             <li class="clearfix">
                                 <p>2. Lägg till stationer på kartan</p>
-                                <a href="/editor/stations" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
+                                <a href="/editor/stations" class="editor-btn "><span class="typcn typcn-chevron-right"></span></a>
 
                             </li>
                             <li class="clearfix">
@@ -105,11 +99,11 @@
                         <ul class="tour-menu">
                             <li class="clearfix">
                                 <p>1. Bestäm namn och startmedia</p>
-                                <a href="/editor/general" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+                                <a href="/editor/general" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
 
                             </li>
                             <li class="clearfix">
-                                <a href="/editor/stations" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
+                                <a href="/editor/stations" class="editor-btn "><span class="typcn typcn-chevron-right"></span></a>
                                 <p>2. Lägg till stationer på kartan</p>
 
                             </li>
@@ -143,17 +137,58 @@
                             <button class="btn green round"> <span class="typcn typcn-cloud-storage"> </span></button>
                             <p class="label-bottom">Spara på kontot</p>
                         </div>
-                        <h2 class="text-center">2. Lägg till stationer på kartan (max 6)</h2>
-                    </div>
-                    <div class="btn-block btn-add-margin station">
-                        <button class="btn green round"> <span class="typcn typcn-plus"> </span></button>
-                        <p class="add-label ">Lägg till station</p>
-
+                        <h2 class="text-center">3. Lägg till media</h2>
                     </div>
                 </div>
                 <div class="rowfixfull clearfix">
-                    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-                    <div id="map-canvas"></div>
+                    <div class="startmedia-wrapper">
+                        <h3>Media på stationer:</h3>
+                        <ul class="stations-list">
+                            <li class="clearfix">
+                                <p class="small-text">Station 1</p>
+                                <a href="/editor/media/station/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Station 2</p>
+                                <a href="/editor/media/station/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                        </ul>
+                        <h3>Media på AR-markörer:</h3>
+                        <ul class="stations-list">
+                            <li class="clearfix">
+                                <p class="small-text">Markör 1</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 2</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 3</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 4</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 5</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 6</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 7</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                            <li class="clearfix">
+                                <p class="small-text">Markör 8</p>
+                                <a href="/editor/media/marker/"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

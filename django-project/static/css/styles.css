@@ -114,6 +114,9 @@ button.green:disabled{
     font-size:16pt;
 
 }
+.btn.full{
+    width: 100%;
+}
 
 .btn.round{
     border-radius: 50px;
