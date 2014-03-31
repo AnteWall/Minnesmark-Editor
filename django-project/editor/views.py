@@ -18,4 +18,8 @@ def render_page_media(request):
 def render_page_publish(request):
     return render(request, 'editor/publish.html')
 
+@login_required
+def render_page_addMedia(request):
+    return render(request, 'editor/addMedia.html')
+
 
