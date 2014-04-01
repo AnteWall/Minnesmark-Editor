@@ -1,40 +1,68 @@
 {% extends "base.html" %}
 
+{% block metadata %}
+
+    <link rel="stylesheet" href="/static/login/login.css" />
+
+
+{% endblock %}
+
 {% block content %}
+    <div class="row clearfix">
 
-<div class="login_wrapper">
-  <h2>Logga in</h2>
-  {% if form.errors %}
-  <h4 id="failed-login">Användarnamnet eller lösenordet är felaktigt, eller så har ditt konto inte aktiverats än!</h4> 
-  {% endif %}
+        <div class="column full">
 
-  {% if user.is_authenticated %}
-  <p> Du är redan inloggad! <a href="/accounts/logout">Logga ut? </a> </p>
-  {% else %}
+            <div class="center-wrapper">
+                <img src="/static/images/minnesmark.png">
 
-  <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+                <h2>Minnesmark Editor</h2>
+                {% if form.errors %}
+                    <h3 id="failed-login">Användarnamnet eller lösenordet är felaktigt, eller så har ditt konto inte aktiverats än!</h3>
+                {% endif %}
 
-    {% csrf_token %}
-    
-   
-      {{ form.username }}
+                {% if user.is_authenticated %}
+                    <p> Du är redan inloggad! <a href="/accounts/logout">Logga ut? </a> </p>
+                {% else %}
 
-      {{ form.username.label_tag }}
+                    <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
 
-      <br>
- 
-      {{ form.password }}
 
-      {{ form.password.label_tag }}
-      <fieldset class="clearfix"></fieldset>
+                        <fieldset class="tag">
+                            {{ form.username }}
+                            {{ form.username.label_tag }}
+                        </fieldset>
+                        <fieldset class="tag">
 
-    <br>
-    
-    <input type="submit" value="Logga in" />
-    <input type="hidden" name="next" value="{{ next }}" />
-  </form>
-  <a href="/accounts/register" class="reg-btn">Registera konto</a>
-  {% endif %}
-</div>
+                            {{ form.password }}
+                            {{ form.password.label_tag }}
+                            <button type="submit" class="btn round login"><span class="typcn typcn-chevron-right"></span></button>
+
+                        </fieldset>
+
+                        <br>
+
+                        <input type="hidden" name="next" value="{{ next }}" />
+                        {% csrf_token %}
+
+                    </form>
+                    <a href="/accounts/passwordrecover">Glömt Lösenord?</a>
+                    <br>
+                    <br>
+                    <br>
+
+                    <a href="/accounts/register" class="reg-btn">Registera konto</a>
+                    <br>
+                    <br>
+                    <br>
+
+                    <footer>
+                        <a href="/about">Om Minnesmark</a>
+                        <p>&copy SICS East Swedish ICT AB</p>
+                    </footer>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}

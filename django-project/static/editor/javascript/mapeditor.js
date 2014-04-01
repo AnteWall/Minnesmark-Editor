@@ -101,9 +101,8 @@ var mmEditor = (function () {
         radiusDistance = 10;
 
         optionsWindow = new google.maps.InfoWindow({
-            content: "<div class='delStation'><button class='remove-button' data-removeIndex=''>Ta bort</button></div>"
+            content: ""
         });
-
         var mapOptions = {
             center: initialLocation,
             mapTypeControlOptions: {
@@ -144,7 +143,7 @@ var mmEditor = (function () {
         //google.maps.Icon object:
         var image = {
                 url: customImage,
-                size: new google.maps.Size(56, 43),
+                size: new google.maps.Size(199, 72),
                 origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(28, 26)
             };
@@ -171,8 +170,8 @@ var mmEditor = (function () {
             position: map.getCenter(),
             draggable:true,
             icon:customImage,
-            labelContent: (stations.length+1).toString(),
-            labelAnchor: new google.maps.Point(3, 40),
+            labelContent: "Station " + (stations.length+1).toString(),
+            labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels", // the CSS class for the label
             labelInBackground: false,
             animation: google.maps.Animation.DROP
@@ -240,7 +239,20 @@ var mmEditor = (function () {
     };
 
     addOptionsWindow = function(latLng,index){
-        optionsWindow.setContent("<div class='delStation'><button class='remove-button' data-removeIndex='"+index+"'>Ta bort</button></div>");
+        var content = "<div class='delStation clearfix'>" +
+            "<h3>Station "+(index+1)+"</h3>" +
+            "<button class='btn'>Klar</button>" +
+            "<div class='input-wrapper'>" +
+            "<label for='lng'>Longitude</label> " +
+            "<input id='lng'' type='text' name='longitude'value='"+latLng.lng()+"' >" +
+            "</div>" +
+            "<div class='input-wrapper'>" +
+            "<label for='lat'>Latitude</label> " +
+            "<input id='lat' type='text' name='latitude'value='"+latLng.lat()+"' >" +
+            "</div>" +
+            "<button class='remove-button btn orange round del-station-btn' data-removeIndex='"+index+"'><span class='typcn typcn-minus'></span></button>" +
+            "<p class='small-text'>Ta Bort Station<p/></div>"
+        optionsWindow.setContent(content);
         optionsWindow.setPosition(latLng);
         optionsWindow.open(map);
         $('.remove-button').on('click',function(){
