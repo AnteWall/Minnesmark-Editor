@@ -8,9 +8,9 @@
 }
 .center-wrapper form input{
     position: relative;
-    border: none;
     padding:14px 20px;
     border: 2px solid #cccccc;
+    border-top: none;
     font-size: 9pt;
     width: 220px;
 }
@@ -34,8 +34,8 @@
     right: 155px;
 }
 
-.center-wrapper form fieldset.tag:nth-child(odd) input{
-    border-top:none;
+.center-wrapper form fieldset.tag:first-child input{
+    border-top: 2px solid #cccccc;
 
 }
 .reg-btn{

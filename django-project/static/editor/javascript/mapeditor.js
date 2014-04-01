@@ -143,7 +143,7 @@ var mmEditor = (function () {
         //google.maps.Icon object:
         var image = {
                 url: customImage,
-                size: new google.maps.Size(56, 43),
+                size: new google.maps.Size(199, 72),
                 origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(28, 26)
             };
@@ -170,8 +170,8 @@ var mmEditor = (function () {
             position: map.getCenter(),
             draggable:true,
             icon:customImage,
-            labelContent: (stations.length+1).toString(),
-            labelAnchor: new google.maps.Point(3, 40),
+            labelContent: "Station " + (stations.length+1).toString(),
+            labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels", // the CSS class for the label
             labelInBackground: false,
             animation: google.maps.Animation.DROP

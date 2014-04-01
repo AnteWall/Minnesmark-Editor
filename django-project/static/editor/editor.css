@@ -463,3 +463,7 @@ ul.media-list li p{
     -moz-transform: rotate(-45deg);
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=-5); /*for IE*/
 }
+.labels{
+    font-size: 18pt!important;
+    font-weight: bold;
+}

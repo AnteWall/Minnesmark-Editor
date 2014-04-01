@@ -1,32 +1,40 @@
 {% extends "base.html" %}
 
-
+{% block metadata %}
+    <link rel="stylesheet" href="/static/admin/admin.css" />
+{% endblock %}
 
 {% block content %}
-  <h2 class="title">Godkänn användare</h2>
+    <div class="row clearfix">
 
-<div id="approve_wrapper">
-  <ul>
-    {% for user in users.all %}
-    <li>
-      <div class="user-info">
-        <p class="username"> <span class="italic">Användarnamn</span>: {{user.username}}</p>
-        <p><span class="italic">Email:</span> {{user.email}}</p>
-        <p><span class="italic">Förnamn:</span> {{user.first_name}}</p>
-        <p><span class="italic">Efternamn:</span> {{user.last_name}}</p>
-      </div>
-      <form action="" method="post">
-        {% csrf_token %}
+        <div class="column full">
 
-        <input type="submit" value="&#10004;" class="approve-btn"/>
-        <input type="hidden" name="userid" value="{{user.id}}">
-      </form>
-      <div class="clearfix"></div>
-    </li>
-    {% endfor %}    
-  </ul>
+            <div class="center-wrapper">
+                <h2 class="title">Godkänn användare</h2>
 
-</div>
+                <ul>
+                    {% for user in users.all %}
+                        <li>
+                            <div class="user-info">
+                                <p class="username"> <span class="italic">Användarnamn:</span>{{user.username}}</p>
+                                <p><span class="italic">Email:</span> {{user.email}}</p>
+                                <p><span class="italic">Förnamn:</span> {{user.first_name}}</p>
+                                <p><span class="italic">Efternamn:</span> {{user.last_name}}</p>
+                            </div>
+                            <form action="" method="post">
+                                {% csrf_token %}
+
+                                <button class="btn full square"><span class="typcn typcn-tick"></span></button>
+                                <input type="hidden" name="userid" value="{{user.id}}">
+                            </form>
+                            <div class="clearfix"></div>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+    </div>
 
 
 
