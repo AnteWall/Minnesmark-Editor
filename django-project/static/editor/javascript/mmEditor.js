@@ -57,6 +57,7 @@ define(function () {
     my.initializeEditor = function(){
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(59.321693,17.886825); // Drottningholm, Stockholm
+        resetSearchSystem();
         radiusDistance = 10;
 
         var mapOptions = {
@@ -83,6 +84,7 @@ define(function () {
         map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
         geoLocation();
+        createSearchField();
         resetTrailSystem();
 
         polyLine = createPolyLine();
@@ -93,9 +95,77 @@ define(function () {
 
     };
 
+    createSearchField = function(){
+
+        ////// GOOGLE IMPLEMENTATION \\\\\\\
+        // Create the search box and link it to the UI element.
+
+        var input = /** @type {HTMLInputElement} */(
+            document.getElementById('pac-input'));
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        var searchBox = new google.maps.places.SearchBox(
+            /** @type {HTMLInputElement} */(input));
+
+        // Listen for the event fired when the user selects an item from the
+        // pick list. Retrieve the matching places for that item.
+        google.maps.event.addListener(searchBox, 'places_changed', function() {
+            var currentZoom = map.getZoom();
+
+            var place = searchBox.getPlaces()[0];
+
+            for (var i = 0, searchPosition; searchPosition = searchPositions[i]; i++) {
+                searchPosition.setMap(null);
+            }
+
+            var searchPosition = createSearchPosition(place);
+            searchPositions = [];
+            searchPositions.push(searchPosition);
+
+            var bounds = new google.maps.LatLngBounds();
+            bounds.extend(place.geometry.location);
+
+            map.fitBounds(bounds);
+            map.setZoom(currentZoom);
+
+        });
+
+        // Bias the SearchBox results towards places that are within the bounds of the
+        // current map's viewport.
+        google.maps.event.addListener(map, 'bounds_changed', function() {
+            var bounds = map.getBounds();
+            searchBox.setBounds(bounds);
+        });
+    };
+
+    createSearchPosition = function(place){
+
+        var customImage = "/static/editor/img/place.png"
+
+        //google.maps.Icon object:
+        var image = {
+                url: customImage,
+                size: new google.maps.Size(56, 43),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(28, 26)
+            };
+
+        var newSearchPosition = new google.maps.Marker({
+        map: map,
+        icon: image,
+        position: place.geometry.location
+        });
+
+        return newSearchPosition;
+    };
+
+    resetSearchSystem = function(){
+        searchPositions = [];
+    };
+
     createPolyLine = function(){
 
-      var polyOptions = {
+        var polyOptions = {
         clickable: true,        // handle mouse events
         draggable: false,       // line can be moved
         editable: true,         // adds control points
@@ -109,25 +179,33 @@ define(function () {
         strokeWeight: 3,        // width in pixels
         visible: true           // visible on map
         //zIndex,               // compared to other polys
-      };
+        };
 
-      var poly = new google.maps.Polyline(polyOptions);
+        var poly = new google.maps.Polyline(polyOptions);
 
-      google.maps.event.addListener(poly, "mouseup", function(event) {
-        // edge = the line (between stations and/or swing points)
-        previousPoint = event.edge;
-        if(previousPoint !== undefined) {
-            for(var i = 0; i < stations.length; i++){
-                if(stations[i].pathIndex > previousPoint){
-                    stations[i].pathIndex += 1;
+        /*google.maps.event.addListener(poly, "mouseout", function(event) {
+            collisionControll();
+        });*/
+
+        google.maps.event.addListener(poly, "mouseup", function(event) {
+            // edge = the line (between stations and/or swing points)
+            previousPoint = event.edge;
+            if(previousPoint !== undefined) {
+                //console.log("This is an edge.");
+                for(var i = 0; i < stations.length; i++){
+                    if(stations[i].pathIndex > previousPoint){
+                        stations[i].pathIndex += 1;
+                    }
                 }
             }
-           /* var position = event.latLng;
-            var nextIndex = event.edge;
-            var newSwingPoint = createSwingPoint(position, nexIndex);
-            swingPoints.push()*/
-        }
-      });
+        });
+
+        google.maps.event.addListener(poly, "click", function(event) {
+            if(event.vertex !== undefined) {
+                //console.log("This is a vertex ("+ event.vertex +").");
+                addOptionsWindow(event.latLng,event.vertex,my.removePoint);
+            }
+        });
 
         /*google.maps.event.addListener(poly, "click", function(event) {
             addOptionsWindow(event.latLng,station.pathIndex);
@@ -208,7 +286,7 @@ define(function () {
         });
 
         google.maps.event.addListener(station, "click", function(event) {
-            addOptionsWindow(event.latLng,station.pathIndex);
+            addOptionsWindow(event.latLng,station.pathIndex,my.removeStation);
         });
 
         station.radius = createStationRadius();
@@ -228,6 +306,7 @@ define(function () {
     };
 
     collisionControll = function(movingStation, init){
+        //TODO implement swing point collision control
         if (init === stations.length)
             return; 
         for(var i = init; i< stations.length; i++) {
@@ -251,73 +330,74 @@ define(function () {
         }
     };
 
-    addOptionsWindow = function(latLng,index){
+    addOptionsWindow = function(latLng,index,func){
         optionsWindow.setContent("<div class='delStation'><button class='remove-button' data-removeIndex='"+index+"'>Ta bort</button></div>");
         optionsWindow.setPosition(latLng);
         optionsWindow.open(map);
 
         $('.remove-button').on('click',function(){
-            console.log("\nindex: " + index);
-            my.removePoint(index);
+            //console.log("\nindex: " + index);
+            func(index);
         })
     }
 
     my.removePoint = function(pathIndex){
-    var astrid = 0;
-        for (var station_index=0; station_index<stations.length; station_index++){
-            console.log("current pathIndex: " + stations[station_index].pathIndex);
-            //console.log("kommer vi såhär långt?");
-
-            if(stations[station_index].pathIndex === pathIndex){
-                //console.log("ska starta for-loopen");
-
-                // Check so station_index is valid
-                var alan = stations[station_index].pathIndex;
-                if (station_index+1 < stations.length) {
-                    alan = stations[station_index+1].pathIndex-1;
-                }
-                var dave = stations[station_index].pathIndex;
-                if (station_index-1 >= 0) {
-                    dave = stations[station_index-1].pathIndex+1;
-                }
-
-                console.log("start: " + alan + ", stop: " + dave);
-                for (var path_index = alan; path_index >= dave; --path_index) {
-                    console.log("remove pathIndex: " + path_index);
-                    polyLine.getPath().removeAt(path_index);
-                    astrid++;
-                }
-                //console.log("stations[i].pathIndex === index");
-                stations[station_index].setMap(null);
-                stations[station_index].radius.setMap(null);
-                console.log("station. length before splice: " + stations.length);
-                stations.splice(station_index,1);
-                console.log("station. length after splice: " + stations.length);
-            }
-
-            if(stations[station_index] != undefined && stations[station_index].pathIndex >= pathIndex){
-                console.log("station_index: " + station_index);
-                console.log("station pathindex before astrid: " + stations[station_index].pathIndex);
-                stations[station_index].pathIndex -= Math.max(1, astrid);
-                console.log("station pathindex after astrid: " + stations[station_index].pathIndex);
-                stations[station_index].labelContent = station_index+1;
-                stations[station_index].label.draw();
+        polyLine.getPath().removeAt(pathIndex);
+        for (var sIndex=0; sIndex<stations.length; sIndex++){
+            if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
+                stations[sIndex].pathIndex -= 1;
             }
         }
         optionsWindow.close();
-
     };
 
+    my.removeStation = function(pathIndex){
+        var Decrease = 0;
+        for (var sIndex=0; sIndex<stations.length; sIndex++){
+            //console.log("current pathIndex: " + stations[sIndex].pathIndex);
+            //console.log("kommer vi såhär långt?");
 
-    my.removeStation = function(){
+            if(stations[sIndex].pathIndex === pathIndex){
+                //console.log("ska starta for-loopen");
 
+                // Check so sIndex is valid
+                var removeFrom = stations[sIndex].pathIndex;
+                if (sIndex+1 < stations.length) {
+                    removeFrom = stations[sIndex+1].pathIndex-1;
+                }
+                var removeTo = stations[sIndex].pathIndex;
+                if (sIndex-1 >= 0) {
+                    removeTo = stations[sIndex-1].pathIndex+1;
+                }
+
+                //console.log("start: " + removeFrom + ", stop: " + removeTo);
+                for (var pIndex = removeFrom; pIndex >= removeTo; --pIndex) {
+                    //console.log("remove pathIndex: " + pIndex);
+                    polyLine.getPath().removeAt(pIndex);
+                    Decrease++;
+                }
+                //console.log("stations[i].pathIndex === index");
+                stations[sIndex].setMap(null);
+                stations[sIndex].radius.setMap(null);
+                //console.log("station. length before splice: " + stations.length);
+                stations.splice(sIndex,1);
+                //console.log("station. length after splice: " + stations.length);
+            }
+
+            if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
+                //console.log("Current station index: " + sIndex);
+                //console.log("station pathindex before Decrease: " + stations[sIndex].pathIndex);
+                stations[sIndex].pathIndex -= Math.max(1,Decrease);
+                //console.log("station pathindex after astrid: " + stations[sIndex].pathIndex);
+                stations[sIndex].labelContent = sIndex+1;
+                stations[sIndex].label.draw();
+            }
+        }
+        optionsWindow.close();
     };
-
 
     resetTrailSystem = function(){
         stations = [];
-        //polylines = [];
-        //polyPaths = [];
         //collisionWindows = [];
     };
 
