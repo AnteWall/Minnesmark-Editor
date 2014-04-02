@@ -195,14 +195,24 @@ define(function () {
             }
         });
 
-        /*google.maps.event.addListener(poly, "mouseout", function(event) {
-            collisionControll();
-        });*/
+        google.maps.event.addListener(poly, "mouseout", function(event) {
+            //console.log(event.vertex);
+            if (event.vertex !== undefined){
+                collisionControll(event.vertex,0);
+            }
+        });
 
         google.maps.event.addListener(poly, "click", function(event) {
             if(event.vertex !== undefined) {
                 //console.log("This is a vertex ("+ event.vertex +").");
                 addOptionsWindow(event.latLng,event.vertex,my.removePoint);
+            }
+        });
+
+        google.maps.event.addListener(poly, "mousemove", function(event) {
+            //console.log(event.vertex);
+            if (event.vertex !== undefined){
+                collisionControll(event.vertex,0);
             }
         });
 
@@ -221,6 +231,7 @@ define(function () {
             var newStation = createStation(position, nextIndex);
 
             stations.push(newStation);
+            collisionControll(newStation.pathIndex,0,true);
         }
 
     };
@@ -260,7 +271,7 @@ define(function () {
             //handCursor,
             labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels",       // the CSS class for the label
-            labelContent: "Station " + (stations.length+1).toString(),
+            labelContent: "Station&nbsp;" + (stations.length+1).toString(),
             labelInBackground: false,
             //labelStyle,
             labelVisible: true,         // visible if marker is
@@ -274,8 +285,9 @@ define(function () {
         });
 
         google.maps.event.addListener(station, "dragend", function(event) {
-            if(stations.length > 1)
-                collisionControll(station,0);
+            if(stations.length > 1) {
+                collisionControll(station.pathIndex,0,true);
+            }
         });
 
         google.maps.event.addListener(station, "click", function(event) {
@@ -284,7 +296,6 @@ define(function () {
 
         station.radius = createStationRadius();
         station.radius.bindTo('center', station, 'position');
-        collisionControll(station,0);
 
         return station;
     };
@@ -298,33 +309,38 @@ define(function () {
         });
     };
 
-    collisionControll = function(movingStation, init){
-        //TODO re-implement swing point collision control
-        if (init === stations.length)
-            return; 
-        for(var i = init; i< stations.length; i++) {
+    collisionControll = function(collisionPoint,init,isStation){
+        if (init === polyLine.getPath().length)
+            return;
 
-            stationaryStation = stations[i];
+        for(var i = init; i< polyLine.getPath().length; i++) {
+            stationaryPoint = polyLine.getPath().getAt(i);
 
             var spherical = google.maps.geometry.spherical;
             var distance = spherical.computeDistanceBetween(
-                stationaryStation.getPosition(),movingStation.getPosition());
+                stationaryPoint,polyLine.getPath().getAt(collisionPoint));
 
-            if (movingStation.labelContent !== stationaryStation.labelContent && 
-                distance < radiusDistance*2) {
+            if (i !== collisionPoint && distance < radiusDistance*2) {
 
                 var newPosition  = spherical.computeOffset(
-                    stationaryStation.getPosition(), radiusDistance*2, 90);
-                movingStation.setPosition(newPosition);
-                polyLine.getPath().setAt(movingStation.pathIndex,newPosition);
+                    stationaryPoint, radiusDistance*2, 90);
+                polyLine.getPath().setAt(collisionPoint,newPosition);
+                if(isStation === true){
+                    for(var j = 0; j< stations.length; j++) {
+                        if(stations[j].pathIndex === collisionPoint){
+                            stations[j].setPosition(newPosition);
+                        }
+                    }
+                }
 
-                collisionControll(movingStation,init+1);
+                collisionControll(collisionPoint,init+1,isStation);
             }
         }
-    };
+
+    }
 
     addOptionsWindow = function(latLng,index,func){
-        var content = "<div class='delStation clearfix'>" +
+        var content = "<div class='delStation clearfixmouseout'>" +
             "<h3>Station "+(index+1)+"</h3>" +
             "<button class='btn'>Klar</button>" +
             "<div class='input-wrapper'>" +
@@ -383,7 +399,7 @@ define(function () {
 
             if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
                 stations[sIndex].pathIndex -= Math.max(1,Decrease);
-                stations[sIndex].labelContent = sIndex+1;
+                stations[sIndex].labelContent = "Station&nbsp;" + (sIndex+1);
                 stations[sIndex].label.draw();
             }
         }
