@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Editor{% endblock %}
+
+{% block metadata %}
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <link rel="stylesheet"
+          href="/static/editor/editor.css"/>
+
+    <script type="text/javascript" src="/static/editor/javascript/editor.js"></script>
+    <link href="/static/editor/css/no-theme/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+    <script src="/static/editor/javascript/jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="/static/editor/javascript/general.js"></script>
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="row clearfix">
+
+        <div class="column third">
+
+            <div class="menu">
+                <h1>Rundor</h1>
+                <div class="menu-btns">
+                    <div class="btn-block">
+                        <button class="btn green round"> <span class="typcn typcn-document-add"> </span></button>
+                        <p class="label-bottom">Ny runda</p>
+                    </div>
+                    <div class="btn-block">
+                        <button class="btn blue round"> <span class="typcn typcn-cog"> </span></button>
+                        <p class="label-bottom">Inställningar</p>
+                    </div>
+                    <div class="btn-block">
+                        <a href="/accounts/logout"><button class="btn blue round"> <span class="typcn typcn-power"> </span></button></a>
+                        <p class="label-bottom">Logga ut</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tour">
+                <ul class="tour-list">
+                    <li>
+                        <span class="typcn typcn-chevron-right see-more"></span>
+                        <h2 class="see-more">Testa lite grann</h2>
+                        <p class="small-text">Opublicerad</p>
+                        <ul class="tour-menu">
+                            <li class="clearfix">
+                                <p>1. Bestäm namn och startmedia</p>
+                                <a href="/editor/general" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>2. Lägg till stationer på kartan</p>
+                                <a href="/editor/stations" class="editor-btn "><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>3. Lägg till media</p>
+                                <a href="/editor/media" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>4. Publicera, skriv ut och färdigställ</p>
+                                <a href="/editor/publish" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span class="typcn typcn-chevron-right see-more"></span>
+                        <h2 class="see-more">Testa lite grann</h2>
+                        <p class="small-text">Opublicerad</p>
+                        <ul class="tour-menu">
+                            <li class="clearfix">
+                                <p>1. Bestäm namn och startmedia</p>
+                                <a href="/editor/general" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>2. Lägg till stationer på kartan</p>
+                                <a href="/editor/stations" class="editor-btn "><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>3. Lägg till media</p>
+                                <a href="/editor/media" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>4. Publicera, skriv ut och färdigställ</p>
+                                <a href="/editor/publish" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span class="typcn typcn-chevron-right see-more"></span>
+                        <h2 class="see-more">Testa lite grann</h2>
+                        <p class="small-text">Opublicerad</p>
+                        <ul class="tour-menu">
+                            <li class="clearfix">
+                                <p>1. Bestäm namn och startmedia</p>
+                                <a href="/editor/general" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <a href="/editor/stations" class="editor-btn "><span class="typcn typcn-chevron-right"></span></a>
+                                <p>2. Lägg till stationer på kartan</p>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>3. Lägg till media</p>
+                                <a href="/editor/media" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+
+                            </li>
+                            <li class="clearfix">
+                                <p>4. Publicera, skriv ut och färdigställ</p>
+                                <a href="/editor/publish" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="column two-thirds">
+
+
+            <div id="map-wrapper">
+                <div class="rowfix clearfix">
+
+                    <div class="top-wrapper">
+                        <div class="btn-block">
+                            <button class="btn blue round"> <span class="typcn typcn-th-menu"> </span></button>
+                            <p class="label-bottom">Göm menyn</p>
+                        </div>
+                        <div class="btn-block">
+                            <button class="btn green round"> <span class="typcn typcn-cloud-storage"> </span></button>
+                            <p class="label-bottom">Spara på kontot</p>
+                        </div>
+                        <h2 class="text-center">1. Bestäm namn och startmedia</h2>
+                    </div>
+                </div>
+                <div class="rowfixfull clearfix">
+                    <div class="tour-name-wrapper">
+                        <label for="tour-name">Namn:</label>
+                        <input id="tour-name" type="text" name="tour-name"/>
+                    </div>
+                    <div class="startmedia-wrapper">
+                        <h3>Startmedia:</h3>
+                        <p class="small-text">Dra för att ändra ordning.</p>
+                        <ul class="media-files">
+                            <li class="clearfix">
+                                <span class="typcn typcn-arrow-unsorted"></span>
+
+                                <button class="media-opt btn round"><span class="typcn typcn-info-large"></span></button>
+                                <p>Medianamnet</p>
+                                <button class="btn round orange minus"><span class="typcn typcn-minus"></span></button>
+                            </li>
+                            <li class="clearfix">
+                                <span class="typcn typcn-arrow-unsorted"></span>
+
+                                <button class="media-opt btn round"><span class="typcn typcn-info-large"></span></button>
+                                <p>Medianamnet</p>
+                                <button class="btn round orange minus"><span class="typcn typcn-minus"></span></button>
+                            </li>
+                        </ul>
+                        <div class="add-media clearfix">
+                            <button class="btn round orange"><span class="typcn typcn-plus"></span></button>
+
+                            <p class="mini-text">Lägg till media</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
