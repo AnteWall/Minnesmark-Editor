@@ -388,6 +388,7 @@ ul.media-list li p{
 }
 
 .fadeBG{
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -466,4 +467,17 @@ ul.media-list li p{
 .labels{
     font-size: 18pt!important;
     font-weight: bold;
+}
+
+.upload-file{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border: 2px solid #d6d5d2;
+    background-color:#f7f6f3;
+    padding:20px;
+}
+.upload-file input{
+    margin-bottom:20px;
 }

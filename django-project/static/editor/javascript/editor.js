@@ -34,7 +34,90 @@ $('document').ready(function(){
     $('.media-opt').on('click',function(){
         createMediaOptionsWindow($(this));
     });
+
+    $('.add-media').on('click',function(){
+       openFileUpload($(this));
+    });
 });
+
+function openFileUpload(e){
+
+    var $bg = $('.fadeBG');
+    var $upload = $('.upload-file');
+    var $btnAbort = $('.upload-abort');
+    var $btn = $('.upload-btn');
+
+    $btnAbort.on('click',function(){
+        $bg.fadeOut();
+        $upload.fadeOut();
+    });
+    $btn.on('click',function(){
+        uploadSelectedFile(function(){
+            $bg.fadeOut();
+            $upload.fadeOut();
+        });
+
+    })
+
+    var top = ($(window).height()/2) - ($upload.outerHeight()/2);
+    var left = ($(window).width()/2) - ($upload.outerWidth()/2);
+    $upload.css({top:top,left:left});
+
+    $bg.fadeIn();
+    $upload.fadeIn();
+
+}
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+};
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+function uploadSelectedFile(){
+    var csrftoken = getCookie('csrftoken');
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+
+    var formData = new FormData();
+    formData.append( 'file', $( '#media_file' )[0].files[0] );
+
+    var request = $.ajax({
+        url: "/upload/mediafile/",
+        type: "POST",
+        data: formData,
+        xhr: function() {  // custom xhr
+            myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // if upload property exists
+                myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // progressbar
+            }
+            return myXhr;
+        },
+        success: function(res){
+            console.log("SUCCESS");
+            //console.log(res);
+        }
+    });
+}
 
 function createMediaOptionsWindow(e){
 
