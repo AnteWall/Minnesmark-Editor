@@ -14,9 +14,8 @@ define(function () {
         optionsWindow,
         polyLine,
         swingPoints,
-        stations;
-        //radiusDistance,
-        //geoLocation,
+        stations,
+        radiusDistance;
 
     my.numberOfActiveStations = function(){
         return stations.length;
@@ -58,6 +57,7 @@ define(function () {
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(59.321693,17.886825); // Drottningholm, Stockholm
         resetSearchSystem();
+        resetTrailSystem();
         radiusDistance = 10;
 
         var mapOptions = {
@@ -85,12 +85,11 @@ define(function () {
 
         geoLocation();
         createSearchField();
-        resetTrailSystem();
 
         polyLine = createPolyLine();
 
         optionsWindow = new google.maps.InfoWindow({
-            content: "<div class='delStation'><button class='remove-button' data-removeIndex=''>Ta bort</button></div>"
+            content: ""
         });
 
     };
@@ -166,26 +165,22 @@ define(function () {
     createPolyLine = function(){
 
         var polyOptions = {
-        clickable: true,        // handle mouse events
-        draggable: false,       // line can be moved
-        editable: true,         // adds control points
-        geodesic: false,        // straight or curved lines
-        //icons,                // icons along the line
-        map: map,               // map to display on
-        //path,                 // points on the line
-        suppressUndo: true,     // undo button when moving line
-        strokeColor: '#000000', // color
-        strokeOpacity: 1.0,     // opacity between 0.0 and 1.0
-        strokeWeight: 3,        // width in pixels
-        visible: true           // visible on map
-        //zIndex,               // compared to other polys
+            clickable: true,        // handle mouse events
+            draggable: false,       // line can be moved
+            editable: true,         // adds control points
+            geodesic: false,        // straight or curved lines
+            //icons,                // icons along the line
+            map: map,               // map to display on
+            //path,                 // points on the line
+            suppressUndo: true,     // undo button when moving line
+            strokeColor: '#000000', // color
+            strokeOpacity: 1.0,     // opacity between 0.0 and 1.0
+            strokeWeight: 3,        // width in pixels
+            visible: true           // visible on map
+            //zIndex,               // compared to other polys
         };
 
         var poly = new google.maps.Polyline(polyOptions);
-
-        /*google.maps.event.addListener(poly, "mouseout", function(event) {
-            collisionControll();
-        });*/
 
         google.maps.event.addListener(poly, "mouseup", function(event) {
             // edge = the line (between stations and/or swing points)
@@ -200,16 +195,16 @@ define(function () {
             }
         });
 
+        /*google.maps.event.addListener(poly, "mouseout", function(event) {
+            collisionControll();
+        });*/
+
         google.maps.event.addListener(poly, "click", function(event) {
             if(event.vertex !== undefined) {
                 //console.log("This is a vertex ("+ event.vertex +").");
                 addOptionsWindow(event.latLng,event.vertex,my.removePoint);
             }
         });
-
-        /*google.maps.event.addListener(poly, "click", function(event) {
-            addOptionsWindow(event.latLng,station.pathIndex);
-        });*/
 
       return poly;
 
@@ -263,26 +258,24 @@ define(function () {
             // MARKERWITHLABEL PROPERTIES
             //crossImage,
             //handCursor,
-            labelAnchor: new google.maps.Point(3, 40),
+            labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels",       // the CSS class for the label
-            labelContent: (stations.length+1).toString(),
+            labelContent: "Station " + (stations.length+1).toString(),
             labelInBackground: false,
             //labelStyle,
             labelVisible: true,         // visible if marker is
+
             // CUSTOM PROPERTIES
             pathIndex: pathIndex
-
         });
 
         google.maps.event.addListener(station, "drag", function(event) {
             polyLine.getPath().setAt(station.pathIndex,station.getPosition());
-            //console.log("Drag: " + polyLine.getPath().length);
         });
 
         google.maps.event.addListener(station, "dragend", function(event) {
             if(stations.length > 1)
                 collisionControll(station,0);
-            //console.log(polyLine.getPath().length);
         });
 
         google.maps.event.addListener(station, "click", function(event) {
@@ -306,7 +299,7 @@ define(function () {
     };
 
     collisionControll = function(movingStation, init){
-        //TODO implement swing point collision control
+        //TODO re-implement swing point collision control
         if (init === stations.length)
             return; 
         for(var i = init; i< stations.length; i++) {
@@ -331,12 +324,24 @@ define(function () {
     };
 
     addOptionsWindow = function(latLng,index,func){
-        optionsWindow.setContent("<div class='delStation'><button class='remove-button' data-removeIndex='"+index+"'>Ta bort</button></div>");
+        var content = "<div class='delStation clearfix'>" +
+            "<h3>Station "+(index+1)+"</h3>" +
+            "<button class='btn'>Klar</button>" +
+            "<div class='input-wrapper'>" +
+            "<label for='lng'>Longitude</label> " +
+            "<input id='lng'' type='text' name='longitude'value='"+latLng.lng()+"' >" +
+            "</div>" +
+            "<div class='input-wrapper'>" +
+            "<label for='lat'>Latitude</label> " +
+            "<input id='lat' type='text' name='latitude'value='"+latLng.lat()+"' >" +
+            "</div>" +
+            "<button class='remove-button btn orange round del-station-btn' data-removeIndex='"+index+"'><span class='typcn typcn-minus'></span></button>" +
+            "<p class='small-text'>Ta Bort Station<p/></div>"
+        optionsWindow.setContent(content);
         optionsWindow.setPosition(latLng);
         optionsWindow.open(map);
 
         $('.remove-button').on('click',function(){
-            //console.log("\nindex: " + index);
             func(index);
         })
     }
@@ -354,11 +359,8 @@ define(function () {
     my.removeStation = function(pathIndex){
         var Decrease = 0;
         for (var sIndex=0; sIndex<stations.length; sIndex++){
-            //console.log("current pathIndex: " + stations[sIndex].pathIndex);
-            //console.log("kommer vi såhär långt?");
 
             if(stations[sIndex].pathIndex === pathIndex){
-                //console.log("ska starta for-loopen");
 
                 // Check so sIndex is valid
                 var removeFrom = stations[sIndex].pathIndex;
@@ -370,25 +372,17 @@ define(function () {
                     removeTo = stations[sIndex-1].pathIndex+1;
                 }
 
-                //console.log("start: " + removeFrom + ", stop: " + removeTo);
                 for (var pIndex = removeFrom; pIndex >= removeTo; --pIndex) {
-                    //console.log("remove pathIndex: " + pIndex);
                     polyLine.getPath().removeAt(pIndex);
                     Decrease++;
                 }
-                //console.log("stations[i].pathIndex === index");
                 stations[sIndex].setMap(null);
                 stations[sIndex].radius.setMap(null);
-                //console.log("station. length before splice: " + stations.length);
                 stations.splice(sIndex,1);
-                //console.log("station. length after splice: " + stations.length);
             }
 
             if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
-                //console.log("Current station index: " + sIndex);
-                //console.log("station pathindex before Decrease: " + stations[sIndex].pathIndex);
                 stations[sIndex].pathIndex -= Math.max(1,Decrease);
-                //console.log("station pathindex after astrid: " + stations[sIndex].pathIndex);
                 stations[sIndex].labelContent = sIndex+1;
                 stations[sIndex].label.draw();
             }
