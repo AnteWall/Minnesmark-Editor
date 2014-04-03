@@ -176,8 +176,10 @@ define(function () {
             strokeColor: '#000000', // color
             strokeOpacity: 1.0,     // opacity between 0.0 and 1.0
             strokeWeight: 3,        // width in pixels
-            visible: true           // visible on map
-            //zIndex,               // compared to other polys
+            visible: true,           // visible on map
+            zIndex: 1000               // compared to other polys
+
+            // CUSTOM PROPERTIES
         };
 
         var poly = new google.maps.Polyline(polyOptions);
@@ -196,9 +198,9 @@ define(function () {
         });
 
         google.maps.event.addListener(poly, "mouseout", function(event) {
-            //console.log(event.vertex);
+            //console.log("vertex: " + event.vertex);
             if (event.vertex !== undefined){
-                collisionControll(event.vertex,0);
+                collisionControll(event.vertex);
             }
         });
 
@@ -209,12 +211,12 @@ define(function () {
             }
         });
 
-        google.maps.event.addListener(poly, "mousemove", function(event) {
-            //console.log(event.vertex);
+        /*google.maps.event.addListener(poly, "mousemove", function(event) {
+            console.log("vertex: " + event.vertex);
             if (event.vertex !== undefined){
-                collisionControll(event.vertex,0);
+                collisionControll(event.vertex);
             }
-        });
+        });*/
 
       return poly;
 
@@ -226,12 +228,13 @@ define(function () {
         if(curStationCount <= 6){
             var position = map.getCenter();
             var path = polyLine.getPath();
-            var nextIndex = path.length;
+            var nextPathIndex = path.length;
             path.push(position);
-            var newStation = createStation(position, nextIndex);
+
+            var newStation = createStation(position, nextPathIndex);
 
             stations.push(newStation);
-            collisionControll(newStation.pathIndex,0,true);
+            collisionControll(newStation.pathIndex,true);
         }
 
     };
@@ -271,7 +274,7 @@ define(function () {
             //handCursor,
             labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels",       // the CSS class for the label
-            labelContent: "Station&nbsp;" + (stations.length+1).toString(),
+            labelContent:  "Station&nbsp;" + (stations.length+1).toString(),
             labelInBackground: false,
             //labelStyle,
             labelVisible: true,         // visible if marker is
@@ -286,7 +289,7 @@ define(function () {
 
         google.maps.event.addListener(station, "dragend", function(event) {
             if(stations.length > 1) {
-                collisionControll(station.pathIndex,0,true);
+                collisionControll(station.pathIndex,true);
             }
         });
 
@@ -309,34 +312,46 @@ define(function () {
         });
     };
 
-    collisionControll = function(collisionPoint,init,isStation){
-        if (init === polyLine.getPath().length)
-            return;
+    collisionControll = function(collisionPathIndex,isStation){
+        var checked = [];
 
-        for(var i = init; i< polyLine.getPath().length; i++) {
-            stationaryPoint = polyLine.getPath().getAt(i);
+        for(var i = 0; i< polyLine.getPath().length; i++) {
+            if(checked.indexOf(i)  >= 0){
+                console.log("Already checked " + i);
+                continue;
+            }
+
+            console.log("Comparing " + collisionPathIndex + " with " + i);
+            targetPosition = polyLine.getPath().getAt(i);
 
             var spherical = google.maps.geometry.spherical;
             var distance = spherical.computeDistanceBetween(
-                stationaryPoint,polyLine.getPath().getAt(collisionPoint));
+                targetPosition,polyLine.getPath().getAt(collisionPathIndex));
 
-            if (i !== collisionPoint && distance < radiusDistance*2) {
+            if (i !== collisionPathIndex && distance < radiusDistance*2) {
+                console.log("Collision with " + i);
+
+                checked.push(i);
 
                 var newPosition  = spherical.computeOffset(
-                    stationaryPoint, radiusDistance*2, 90);
-                polyLine.getPath().setAt(collisionPoint,newPosition);
+                    targetPosition,radiusDistance*2, 90);
+                polyLine.getPath().setAt(collisionPathIndex,newPosition);
+
                 if(isStation === true){
                     for(var j = 0; j< stations.length; j++) {
-                        if(stations[j].pathIndex === collisionPoint){
-                            stations[j].setPosition(newPosition);
+                        if(stations[j].pathIndex === collisionPathIndex){
+                           console.log("Moving station with index: " + j);
+                           stations[j].setPosition(newPosition);
                         }
                     }
                 }
 
-                collisionControll(collisionPoint,init+1,isStation);
+                i = -1;
             }
+            console.log("\n");
         }
 
+        console.log("FINISHED\n");
     }
 
     addOptionsWindow = function(latLng,index,func){
