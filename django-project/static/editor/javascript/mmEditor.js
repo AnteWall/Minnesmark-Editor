@@ -176,8 +176,8 @@ define(function () {
             strokeColor: '#000000', // color
             strokeOpacity: 1.0,     // opacity between 0.0 and 1.0
             strokeWeight: 3,        // width in pixels
-            visible: true,           // visible on map
-            zIndex: 1000               // compared to other polys
+            visible: true           // visible on map
+            //zIndex: 1000               // compared to other polys
 
             // CUSTOM PROPERTIES
         };
@@ -267,7 +267,7 @@ define(function () {
             //shape,                // 
             //title,                // rollover text
             visible: true,          // visible on map
-            //zIndex,               // compared to other markers
+            zIndex: 1000,               // compared to other markers
 
             // MARKERWITHLABEL PROPERTIES
             //crossImage,
@@ -317,11 +317,11 @@ define(function () {
 
         for(var i = 0; i< polyLine.getPath().length; i++) {
             if(checked.indexOf(i)  >= 0){
-                console.log("Already checked " + i);
+                //console.log("Already checked " + i);
                 continue;
             }
 
-            console.log("Comparing " + collisionPathIndex + " with " + i);
+            //console.log("Comparing " + collisionPathIndex + " with " + i);
             targetPosition = polyLine.getPath().getAt(i);
 
             var spherical = google.maps.geometry.spherical;
@@ -329,7 +329,7 @@ define(function () {
                 targetPosition,polyLine.getPath().getAt(collisionPathIndex));
 
             if (i !== collisionPathIndex && distance < radiusDistance*2) {
-                console.log("Collision with " + i);
+                //console.log("Collision with " + i);
 
                 checked.push(i);
 
@@ -340,7 +340,7 @@ define(function () {
                 if(isStation === true){
                     for(var j = 0; j< stations.length; j++) {
                         if(stations[j].pathIndex === collisionPathIndex){
-                           console.log("Moving station with index: " + j);
+                           //console.log("Moving station with index: " + j);
                            stations[j].setPosition(newPosition);
                         }
                     }
@@ -348,10 +348,10 @@ define(function () {
 
                 i = -1;
             }
-            console.log("\n");
+            //console.log("\n");
         }
 
-        console.log("FINISHED\n");
+        //console.log("FINISHED\n");
     }
 
     addOptionsWindow = function(latLng,index,func){
