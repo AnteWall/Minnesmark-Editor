@@ -1,8 +1,32 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
+# Update database with 'manage.py syncdb'.
+
+# Route tables
+class Routes(models.Model):
+    user = models.ForeignKey(User)
+    name = models.CharField(max_length=40)
+    active = models.BooleanField(default=False)
+
+class Stations(models.Model):
+    route = models.ForeignKey(Routes, null=True)
+    latitude = models.DecimalField(max_digits=30, decimal_places=25)
+    longitude = models.DecimalField(max_digits=30, decimal_places=25)
+    number = models.IntegerField()
+    index = models.IntegerField()
+
+class Points(models.Model):
+    route = models.ForeignKey(Routes, null=True)
+    latitude = models.DecimalField(max_digits=30, decimal_places=25)
+    longitude = models.DecimalField(max_digits=30, decimal_places=25)
+    index = models.IntegerField()
+
+# Media tables
+
 class Media(models.Model):
-    #station = models.ForeignKey(Stations)
+    station = models.ForeignKey(Stations)
     name = models.CharField(max_length=40)
     filepath = models.CharField(max_length=256)
     size = models.IntegerField()

@@ -21,6 +21,13 @@ define(function () {
         return stations.length;
     }
 
+    my.getStations = function(){
+        return stations;
+    }
+    my.getPath = function(){
+        return polyLine.getPath().getArray();
+    }
+
     geoLocation = function(){
         /*
          Geolocation for starting position

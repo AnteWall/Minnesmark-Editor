@@ -42,6 +42,9 @@ urlpatterns = patterns('',
     url(r'^editor/media/station/$', render_page_addMedia),
     url(r'^editor/publish/$', render_page_publish),
 
+    #url for database
+    url(r'^editor/saveRouteDB', save_route_to_database),
+
 
     # Testing
     #url(r'^date/$', current_datetime)
