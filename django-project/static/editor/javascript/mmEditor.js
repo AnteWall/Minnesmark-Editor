@@ -177,7 +177,9 @@ define(function () {
             strokeOpacity: 1.0,     // opacity between 0.0 and 1.0
             strokeWeight: 3,        // width in pixels
             visible: true           // visible on map
-            //zIndex,               // compared to other polys
+            //zIndex: 1000               // compared to other polys
+
+            // CUSTOM PROPERTIES
         };
 
         var poly = new google.maps.Polyline(polyOptions);
@@ -195,9 +197,12 @@ define(function () {
             }
         });
 
-        /*google.maps.event.addListener(poly, "mouseout", function(event) {
-            collisionControll();
-        });*/
+        google.maps.event.addListener(poly, "mouseout", function(event) {
+            //console.log("vertex: " + event.vertex);
+            if (event.vertex !== undefined){
+                collisionControll(event.vertex);
+            }
+        });
 
         google.maps.event.addListener(poly, "click", function(event) {
             if(event.vertex !== undefined) {
@@ -205,6 +210,13 @@ define(function () {
                 addOptionsWindow(event.latLng,event.vertex,my.removePoint);
             }
         });
+
+        /*google.maps.event.addListener(poly, "mousemove", function(event) {
+            console.log("vertex: " + event.vertex);
+            if (event.vertex !== undefined){
+                collisionControll(event.vertex);
+            }
+        });*/
 
       return poly;
 
@@ -216,11 +228,13 @@ define(function () {
         if(curStationCount <= 6){
             var position = map.getCenter();
             var path = polyLine.getPath();
-            var nextIndex = path.length;
+            var nextPathIndex = path.length;
             path.push(position);
-            var newStation = createStation(position, nextIndex);
+
+            var newStation = createStation(position, nextPathIndex);
 
             stations.push(newStation);
+            collisionControll(newStation.pathIndex,true);
         }
 
     };
@@ -253,14 +267,14 @@ define(function () {
             //shape,                // 
             //title,                // rollover text
             visible: true,          // visible on map
-            //zIndex,               // compared to other markers
+            zIndex: 1000,               // compared to other markers
 
             // MARKERWITHLABEL PROPERTIES
             //crossImage,
             //handCursor,
             labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels",       // the CSS class for the label
-            labelContent: "Station " + (stations.length+1).toString(),
+            labelContent:  "Station&nbsp;" + (stations.length+1).toString(),
             labelInBackground: false,
             //labelStyle,
             labelVisible: true,         // visible if marker is
@@ -274,8 +288,9 @@ define(function () {
         });
 
         google.maps.event.addListener(station, "dragend", function(event) {
-            if(stations.length > 1)
-                collisionControll(station,0);
+            if(stations.length > 1) {
+                collisionControll(station.pathIndex,true);
+            }
         });
 
         google.maps.event.addListener(station, "click", function(event) {
@@ -284,7 +299,6 @@ define(function () {
 
         station.radius = createStationRadius();
         station.radius.bindTo('center', station, 'position');
-        collisionControll(station,0);
 
         return station;
     };
@@ -298,33 +312,50 @@ define(function () {
         });
     };
 
-    collisionControll = function(movingStation, init){
-        //TODO re-implement swing point collision control
-        if (init === stations.length)
-            return; 
-        for(var i = init; i< stations.length; i++) {
+    collisionControll = function(collisionPathIndex,isStation){
+        var checked = [];
 
-            stationaryStation = stations[i];
+        for(var i = 0; i< polyLine.getPath().length; i++) {
+            if(checked.indexOf(i)  >= 0){
+                //console.log("Already checked " + i);
+                continue;
+            }
+
+            //console.log("Comparing " + collisionPathIndex + " with " + i);
+            targetPosition = polyLine.getPath().getAt(i);
 
             var spherical = google.maps.geometry.spherical;
             var distance = spherical.computeDistanceBetween(
-                stationaryStation.getPosition(),movingStation.getPosition());
+                targetPosition,polyLine.getPath().getAt(collisionPathIndex));
 
-            if (movingStation.labelContent !== stationaryStation.labelContent && 
-                distance < radiusDistance*2) {
+            if (i !== collisionPathIndex && distance < radiusDistance*2) {
+                //console.log("Collision with " + i);
+
+                checked.push(i);
 
                 var newPosition  = spherical.computeOffset(
-                    stationaryStation.getPosition(), radiusDistance*2, 90);
-                movingStation.setPosition(newPosition);
-                polyLine.getPath().setAt(movingStation.pathIndex,newPosition);
+                    targetPosition,radiusDistance*2, 90);
+                polyLine.getPath().setAt(collisionPathIndex,newPosition);
 
-                collisionControll(movingStation,init+1);
+                if(isStation === true){
+                    for(var j = 0; j< stations.length; j++) {
+                        if(stations[j].pathIndex === collisionPathIndex){
+                           //console.log("Moving station with index: " + j);
+                           stations[j].setPosition(newPosition);
+                        }
+                    }
+                }
+
+                i = -1;
             }
+            //console.log("\n");
         }
-    };
+
+        //console.log("FINISHED\n");
+    }
 
     addOptionsWindow = function(latLng,index,func){
-        var content = "<div class='delStation clearfix'>" +
+        var content = "<div class='delStation clearfixmouseout'>" +
             "<h3>Station "+(index+1)+"</h3>" +
             "<button class='btn'>Klar</button>" +
             "<div class='input-wrapper'>" +
@@ -383,7 +414,7 @@ define(function () {
 
             if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
                 stations[sIndex].pathIndex -= Math.max(1,Decrease);
-                stations[sIndex].labelContent = sIndex+1;
+                stations[sIndex].labelContent = "Station&nbsp;" + (sIndex+1);
                 stations[sIndex].label.draw();
             }
         }
