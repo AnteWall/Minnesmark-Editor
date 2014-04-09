@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from editor.models import Media
 from minnesmark.settings import PROJECT_ROOT
 
+# Login_required means that the user has to be looged in to see that specific page
 
 @login_required
 def render_page(request):

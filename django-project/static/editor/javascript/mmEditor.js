@@ -60,7 +60,8 @@ define(function () {
         resetTrailSystem();
         radiusDistance = 10;
 
-        var mapOptions = {
+	//Different options to the map
+        var mapOptions = { 
             center: initialLocation,
             panControl: false,
             mapTypeControlOptions: {
@@ -81,6 +82,7 @@ define(function () {
             }
         };
 
+	//Specify where the map should be, and with which options
         map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
         geoLocation();
@@ -150,9 +152,9 @@ define(function () {
             };
 
         var newSearchPosition = new google.maps.Marker({
-        map: map,
-        icon: image,
-        position: place.geometry.location
+            map: map,
+            icon: image,
+            position: place.geometry.location
         });
 
         return newSearchPosition;
@@ -184,6 +186,7 @@ define(function () {
 
         var poly = new google.maps.Polyline(polyOptions);
 
+	// If we added a swing point, the path index needs to be updated
         google.maps.event.addListener(poly, "mouseup", function(event) {
             // edge = the line (between stations and/or swing points)
             previousPoint = event.edge;
@@ -197,6 +200,7 @@ define(function () {
             }
         });
 
+	// Check if the swing point/station is in a valid position
         google.maps.event.addListener(poly, "mouseout", function(event) {
             //console.log("vertex: " + event.vertex);
             if (event.vertex !== undefined){
@@ -204,6 +208,7 @@ define(function () {
             }
         });
 
+	// Popup a options window
         google.maps.event.addListener(poly, "click", function(event) {
             if(event.vertex !== undefined) {
                 //console.log("This is a vertex ("+ event.vertex +").");
@@ -225,6 +230,7 @@ define(function () {
     my.addStation = function(){
         var curStationCount = (stations.length + 1);
 
+	// Check so we can't add more than 6 stations
         if(curStationCount <= 6){
             var position = map.getCenter();
             var path = polyLine.getPath();
@@ -233,7 +239,7 @@ define(function () {
 
             var newStation = createStation(position, nextPathIndex);
 
-            stations.push(newStation);
+            stations.push(newStation); // Add the new station to stations[]
             collisionControll(newStation.pathIndex,true);
         }
 
@@ -283,16 +289,19 @@ define(function () {
             pathIndex: pathIndex
         });
 
+	// Updates the path to the marker that's being dragged
         google.maps.event.addListener(station, "drag", function(event) {
             polyLine.getPath().setAt(station.pathIndex,station.getPosition());
         });
 
+	// On dragend, check if position is valid
         google.maps.event.addListener(station, "dragend", function(event) {
             if(stations.length > 1) {
                 collisionControll(station.pathIndex,true);
             }
         });
 
+	// Popup a option window
         google.maps.event.addListener(station, "click", function(event) {
             addOptionsWindow(event.latLng,station.pathIndex,my.removeStation);
         });
@@ -326,7 +335,7 @@ define(function () {
 
             var spherical = google.maps.geometry.spherical;
             var distance = spherical.computeDistanceBetween(
-                targetPosition,polyLine.getPath().getAt(collisionPathIndex));
+                targetPosition,polyLine.getPath().getAt(collisionPathIndex)); //Calculats the distance between 2 positions
 
             if (i !== collisionPathIndex && distance < radiusDistance*2) {
                 //console.log("Collision with " + i);
@@ -334,9 +343,10 @@ define(function () {
                 checked.push(i);
 
                 var newPosition  = spherical.computeOffset(
-                    targetPosition,radiusDistance*2, 90);
+                    targetPosition,radiusDistance*2, 90); // Calculates where the new position should be
                 polyLine.getPath().setAt(collisionPathIndex,newPosition);
 
+		// Check if stations[] need to update with the new position
                 if(isStation === true){
                     for(var j = 0; j< stations.length; j++) {
                         if(stations[j].pathIndex === collisionPathIndex){
@@ -345,7 +355,9 @@ define(function () {
                         }
                     }
                 }
-
+		
+		// When the new position is set, we need to check every swing point/station
+		// again to make sure that the new position is valid
                 i = -1;
             }
             //console.log("\n");
@@ -354,6 +366,7 @@ define(function () {
         //console.log("FINISHED\n");
     }
 
+    // A popup window where you can get the latlng coordinates, and remove the swing point/station
     addOptionsWindow = function(latLng,index,func){
         var content = "<div class='delStation clearfixmouseout'>" +
             "<h3>Station "+(index+1)+"</h3>" +
@@ -377,6 +390,7 @@ define(function () {
         })
     }
 
+    // Removes a swing point
     my.removePoint = function(pathIndex){
         polyLine.getPath().removeAt(pathIndex);
         for (var sIndex=0; sIndex<stations.length; sIndex++){
@@ -387,6 +401,8 @@ define(function () {
         optionsWindow.close();
     };
 
+    // Removes a station
+    // When a station is removed, all the swingpoints before/after the station is also removed
     my.removeStation = function(pathIndex){
         var Decrease = 0;
         for (var sIndex=0; sIndex<stations.length; sIndex++){
@@ -412,6 +428,7 @@ define(function () {
                 stations.splice(sIndex,1);
             }
 
+	    // If we need to update station index
             if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
                 stations[sIndex].pathIndex -= Math.max(1,Decrease);
                 stations[sIndex].labelContent = "Station&nbsp;" + (sIndex+1);

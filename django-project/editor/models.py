@@ -1,6 +1,8 @@
 from django.db import models
 
 # Create your models here.
+
+#How the media files is stored in the database
 class Media(models.Model):
     #station = models.ForeignKey(Stations)
     name = models.CharField(max_length=40)

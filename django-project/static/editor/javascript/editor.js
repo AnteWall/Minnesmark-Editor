@@ -40,6 +40,7 @@ $('document').ready(function(){
     });
 });
 
+// Opens the window with file options
 function openFileUpload(e){
 
     var $bg = $('.fadeBG');
