@@ -5,6 +5,7 @@ from editor.views import render_page_general
 from editor.views import render_page_media
 from editor.views import render_page_publish
 from editor.views import render_page_addMedia
+from editor.views import create_route, save_route_to_database
 
 from minnesmark.views import approveUser
 from django.views.generic import RedirectView
@@ -33,7 +34,7 @@ urlpatterns = patterns('',
     # url for Login Page using Django built in login
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^accounts/logout$', 'django.contrib.auth.views.logout_then_login'),
-    url(r'^accounts/register$', register_account,name="register"),
+    url(r'^accounts/register$', register_account, name="register"),
 
     #url for the editor
     url(r'^editor/stations/$', render_page),
@@ -44,6 +45,7 @@ urlpatterns = patterns('',
 
     #url for database
     url(r'^editor/saveRouteDB', save_route_to_database),
+    url(r'^editor/createRoute', create_route),
 
 
     # Testing

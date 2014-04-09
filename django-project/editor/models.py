@@ -5,29 +5,27 @@ from django.contrib.auth.models import User
 # Update database with 'manage.py syncdb'.
 
 # Route tables
-class Routes(models.Model):
+class Route(models.Model):
     user = models.ForeignKey(User)
     name = models.CharField(max_length=40)
-    active = models.BooleanField(default=False)
+    published = models.BooleanField(default=False)
 
-class Stations(models.Model):
-    route = models.ForeignKey(Routes, null=True)
-    latitude = models.DecimalField(max_digits=30, decimal_places=25)
-    longitude = models.DecimalField(max_digits=30, decimal_places=25)
+class Station(models.Model):
+    route = models.ForeignKey(Route, null=True)
     number = models.IntegerField()
     index = models.IntegerField()
 
-class Points(models.Model):
-    route = models.ForeignKey(Routes, null=True)
+class Polyline(models.Model):
+    route = models.ForeignKey(Route, null=True)
+    index = models.IntegerField()
     latitude = models.DecimalField(max_digits=30, decimal_places=25)
     longitude = models.DecimalField(max_digits=30, decimal_places=25)
-    index = models.IntegerField()
 
 # Media tables
 
 class Media(models.Model):
-    station = models.ForeignKey(Stations)
-    name = models.CharField(max_length=40)
+    station = models.ForeignKey(Station)
+    filename = models.CharField(max_length=40)
     filepath = models.CharField(max_length=256)
     size = models.IntegerField()
     treasure = models.BooleanField(default=False)

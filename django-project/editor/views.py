@@ -1,7 +1,8 @@
 import os
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from editor.models import Media
+from editor.models import Media, Route
 from minnesmark.settings import PROJECT_ROOT
 
 
@@ -54,5 +55,58 @@ def handle_upload(f,username):
     media.save()
     return True
 
+@login_required
+def save_route_to_database(request):
+    response_data = {}
+
+    #TODO FIX SAVE TO GET ID FROM EDITOR
+
+    '''if request.user.is_authenticated():
+        """Load JSON"""
+        try:
+            json_str = request.body.decode(encoding='UTF-8')
+            json_obj = json.loads(json_str)
+        except:
+            response_data['result'] = 'failed'
+            response_data['message'] = 'Kunde inte ladda data'
+
+
+        try:
+            for station in json_obj["markers"]:
+                station = Markers(route=route,latitude=station["latitude"],
+                                 longitude=station["longitude"],
+                                 number=station["number"],
+                                 index=station["index"])
+                station.save()
+        except:
+            response_data['result'] = 'failed'
+            response_data['message'] = 'Kunde inte spara markörer'
+
+        try:
+            for point in json_obj["points"]:
+                point = Points(route=route,
+                               latitude=point["latitude"],
+                               longitude=point["longitude"],
+                               index=point["index"])
+                point.save()
+            response_data['result'] = 'ok'
+            response_data['route_id'] = route.id
+            response_data['message'] = 'Rutten sparades'
+        except:
+            response_data['result'] = 'failed'
+            response_data['message'] = 'Kunde inte spara punkter'
+
+    else:
+        response_data['result'] = 'failed'
+        response_data['message'] = 'Rutten sparades inte'
+
+    return HttpResponse(json.dumps(response_data), content_type="application/json")'''
+    return HttpResponse("kunde ha sparat data, men neee")
+
+@login_required
+def create_route(request):
+    route = Route(user=request.user)
+    route.save()
+    return redirect('/editor/general/?id='+str(route.id))
 
 
