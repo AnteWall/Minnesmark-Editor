@@ -8,18 +8,35 @@ class Media(models.Model):
     size = models.IntegerField()
     treasure = models.BooleanField(default=False)
 
-    FILEOPTIONS = {
-        (1, 'panorama'),
-        (2, 'camera_bg'),
-        (3, 'fullscreen')
+    PANORAMA = 1
+    CAMERA_BG = 2
+    FULLSCREEN = 3
+    FILE_OPTIONS = {
+        (PANORAMA,1),
+        (CAMERA_BG,2),
+        (FULLSCREEN,3)
     }
 
-    options = models.IntegerField(choices=FILEOPTIONS,null=True)
+    options = models.IntegerField(choices=FILE_OPTIONS,null=True)
 
-    @classmethod
-    def create_media(cls, name, filepath, size, treasure):
-        media = cls(name=name, filepath=filepath, size=size, treasure=treasure)
-        return media
+    STARTMEDIA = 1
+    STATION_MEDIA = 2
+    AR_MEDIA = 3
+    media_type = {
+        (STARTMEDIA, 1),
+        (STATION_MEDIA, 2),
+        (AR_MEDIA, 3)
+    }
+    mediatype= models.IntegerField(choices=media_type,null=False)
+
+    def as_json(self):
+        return dict(
+            name=self.name,
+            filepath = self.filepath,
+            size =self.size,
+            treasure=self.treasure,
+            options=self.options
+        )
 
 
 class MediaTypes(models.Model):
