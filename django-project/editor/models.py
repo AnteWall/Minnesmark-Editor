@@ -1,10 +1,28 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
+# Route tables
+class Route(models.Model):
+    user = models.ForeignKey(User)
+    name = models.CharField(max_length=40)
+    published = models.BooleanField(default=False)
+
+class Station(models.Model):
+    route = models.ForeignKey(Route, null=True)
+    number = models.IntegerField()
+    index = models.IntegerField()
+
+class Polyline(models.Model):
+    route = models.ForeignKey(Route, null=True)
+    index = models.IntegerField()
+    latitude = models.DecimalField(max_digits=30, decimal_places=25)
+    longitude = models.DecimalField(max_digits=30, decimal_places=25)
+
+# Media tables
 class Media(models.Model):
-    #station = models.ForeignKey(Stations)
-    name = models.CharField(max_length=256)
+    route = models.ForeignKey(Route)
+    station = models.ForeignKey(Station,null=True)
+    filename = models.CharField(max_length=256)
     filepath = models.CharField(max_length=256)
     size = models.IntegerField()
     treasure = models.BooleanField(default=False)
@@ -34,7 +52,7 @@ class Media(models.Model):
     def as_json(self):
         return dict(
             id=self.id,
-            name=self.name,
+            name=self.filename,
             filepath=self.filepath,
             size=self.size,
             treasure=self.treasure,
