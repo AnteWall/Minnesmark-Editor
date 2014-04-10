@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 # Route tables
 class Route(models.Model):
     user = models.ForeignKey(User)
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40,default="Ny Rutt")
     published = models.BooleanField(default=False)
 
 class Station(models.Model):

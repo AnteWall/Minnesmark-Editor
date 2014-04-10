@@ -37,11 +37,11 @@ urlpatterns = patterns('',
     url(r'^accounts/register$', register_account, name="register"),
 
     #url for the editor
-    url(r'^editor/stations/$', render_page),
-    url(r'^editor/general/$', render_page_general),
-    url(r'^editor/media/$', render_page_media),
+    url(r'^editor/stations/(?P<route_id>\d+)/$', render_page),
+    url(r'^editor/general/(?P<route_id>\d+)/$', render_page_general),
+    url(r'^editor/media/(?P<route_id>\d+)/$', render_page_media),
     url(r'^editor/media/station/$', render_page_addMedia),
-    url(r'^editor/publish/$', render_page_publish),
+    url(r'^editor/publish/(?P<route_id>\d+)/$', render_page_publish),
 
     #url for database
     url(r'^editor/saveRouteDB', save_route_to_database),

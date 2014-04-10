@@ -1,17 +1,25 @@
 import os
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
 from editor.models import Media, Route
 from minnesmark.settings import PROJECT_ROOT
 
 
-@login_required
-def render_page(request):
-    return render(request, 'editor/editor.html')
+def get_all_routes_from_user(user_id):
+    routes = Route.objects.filter(user_id=user_id)
+    return routes
 
 @login_required
-def render_page_general(request):
+def render_page(request,route_id):
+    routes = get_all_routes_from_user(request.user.id)
+    return render_to_response('editor/editor.html', {'routes': routes,'cur_route':route_id},
+                              context_instance=RequestContext(request))
+
+@login_required
+def render_page_general(request,route_id):
+    routes = get_all_routes_from_user(request.user.id)
     if request.method == 'POST':
         success = False
         if request.user.is_authenticated():
@@ -22,21 +30,25 @@ def render_page_general(request):
             print("Funka!")
         else:
             print("Fuck...")
-
-
-    return render(request, 'editor/general.html')
-
-@login_required
-def render_page_media(request):
-    return render(request, 'editor/media.html')
+    return render_to_response('editor/general.html', {'routes': routes,'cur_route':route_id},
+                              context_instance=RequestContext(request))
 
 @login_required
-def render_page_publish(request):
-    return render(request, 'editor/publish.html')
+def render_page_media(request,route_id):
+    routes = get_all_routes_from_user(request.user.id)
+    return render_to_response('editor/media.html', {'routes': routes,'cur_route':route_id},                              context_instance=RequestContext(request))
+
+@login_required
+def render_page_publish(request,route_id):
+    routes = get_all_routes_from_user(request.user.id)
+    return render_to_response('editor/publish.html', {'routes': routes,'cur_route':route_id},
+                              context_instance=RequestContext(request))
 
 @login_required
 def render_page_addMedia(request):
-    return render(request, 'editor/addMedia.html')
+    routes = get_all_routes_from_user(request.user.id)
+    return render_to_response('editor/addMedia.html', {'routes': routes,'cur_route':route_id},
+                              context_instance=RequestContext(request))
 
 def handle_upload(f,username):
     folder = os.path.join(PROJECT_ROOT, '../users/'+username+'/')
@@ -107,6 +119,6 @@ def save_route_to_database(request):
 def create_route(request):
     route = Route(user=request.user)
     route.save()
-    return redirect('/editor/general/?id='+str(route.id))
+    return redirect('/editor/general/'+str(route.id))
 
 
