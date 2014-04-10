@@ -88,7 +88,6 @@ function getCookie(name) {
     return cookieValue;
 }
 function uploadSelectedFile(){
-    addLi("testarlite"); // dynamicname mwhaha
     var csrftoken = getCookie('csrftoken');
     $.ajaxSetup({
         crossDomain: false, // obviates need for sameOrigin test
@@ -119,16 +118,6 @@ function uploadSelectedFile(){
             //console.log(res);
         }
     });
-}
-
-function addLi(name){
-    stuff = "<li class='clearfix'><span class='typcn typcn-arrow-unsorted'> </span><button class='media-opt btn round'><span class='typcn typcn-info-large'></span></button><p>" + name + "</p><button class='btn round orange minus'><span class='typcn typcn-minus'></span></button></li>";
-    var list = document.getElementById("addLi");
-    var li = document.createElement("li");
-    var div = document.createElement("div");
-    div.innerHTML = stuff;
-    li.appendChild(div);
-    list.appendChild(li);
 }
 
 function createMediaOptionsWindow(e){

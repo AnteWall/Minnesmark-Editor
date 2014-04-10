@@ -156,3 +156,9 @@ a{
     -o-transform: rotate(90deg);
     writing-mode: tb-rl;
 }
+.error{
+    margin:20px;
+    padding: 10px 20px;
+    background-color: red;
+    color:white;
+}

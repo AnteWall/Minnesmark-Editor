@@ -157,14 +157,12 @@
                         <h3>Startmedia</h3>
                         <p class="small-text">Markera media som skickas till användarens e-post i slutet av rundan</p>
                         <ul class="startmedia-list">
-                            <li class="clearfix">
-                                <input type="checkbox" name="MEDIANAMNETHÄR!"/>
-                                <p class="small-text">starbild.png</p>
-                            </li>
-                            <li class="clearfix">
-                                <input type="checkbox" name="MEDIANAMNETHÄR!"/>
-                                <p class="small-text">starfilm.mp4</p>
-                            </li>
+                            {% for m in start_media %}
+                                <li class="clearfix">
+                                    <input type="checkbox" name="{{ m.name }}"/>
+                                    <p class="small-text">{{ m.name }}</p>
+                                </li>
+                            {% endfor %}
                         </ul>
                         <h3>Media på station 1</h3>
                         <p class="small-text">Markera media som skickas till användarens e-post i slutet av rundan</p>

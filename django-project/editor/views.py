@@ -1,5 +1,6 @@
 import json
 import os
+from django.contrib.auth.models import User
 from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -15,24 +16,26 @@ def render_page(request):
 
 @login_required
 def render_page_general(request):
+    msg = None
     if request.method == 'POST':
         success = False
         media_id = -1
         if request.user.is_authenticated():
-            username = request.user.username
-            print(username)
-            success,media_id = handle_upload(request.FILES['media_file'],username)
+            try:
+                success = delete_media(request.POST['delmedia'],request.user.id)
+            except:
+                success,media_id = handle_upload(request.FILES['media_file'], request.user.username,request.user.id)
         if(success):
             pass
             #media_msg =
         else:
-            print("Fuck...")
+            msg = "Ett fel uppstod när vi försökte ta hand om din bergäran. Försök igen senare!"
 
     start_media = []
-    for m in Media.objects.filter(mediatype=Media.STARTMEDIA):
+    for m in Media.objects.filter(mediatype=Media.STARTMEDIA,user=request.user).order_by('order'):
         start_media.append(m.as_json())
 
-    return render_to_response('editor/general.html',{'start_media':start_media},context_instance=RequestContext(request))
+    return render_to_response('editor/general.html',{'start_media':start_media,"msg":msg},context_instance=RequestContext(request))
 
 @login_required
 def render_page_media(request):
@@ -40,13 +43,17 @@ def render_page_media(request):
 
 @login_required
 def render_page_publish(request):
-    return render(request, 'editor/publish.html')
+    start_media = []
+    for m in Media.objects.filter(mediatype=Media.STARTMEDIA,user=request.user).order_by('order'):
+        start_media.append(m.as_json())
+
+    return render_to_response('editor/publish.html',{'start_media':start_media},context_instance=RequestContext(request))
 
 @login_required
 def render_page_addMedia(request):
     return render(request, 'editor/addMedia.html')
 
-def handle_upload(f,username):
+def handle_upload(f, username,user_id):
     #Set Project Path
     path = PROJECT_ROOT
     os.chdir(path)
@@ -77,12 +84,32 @@ def handle_upload(f,username):
         return False
 
     #Name, Filepath, Size, Treasure
-    media = Media(name=f.name,filepath=fullpath,size=f.size, treasure=False,mediatype = Media.STARTMEDIA)
+    userobject = User.objects.get(id=user_id)
+
+    media_count = Media.objects.filter(mediatype=Media.STARTMEDIA,user=userobject).count()
+
+    media = Media(name=f.name,
+                  filepath=fullpath,
+                  size=f.size,
+                  treasure=False,
+                  mediatype = Media.STARTMEDIA,
+                  user=userobject,
+                  order = media_count)
     media.save()
     if media.pk > 0:
         return True,media.pk
     else:
         return False
 
-
+def delete_media(media_id,user_id):
+    m = Media.objects.get(id=media_id)
+    u = User.objects.get(id=user_id)
+    print(m.user)
+    print(u)
+    if m.user.id == u.id or u.is_superuser:
+        os.remove(m.filepath)
+        m.delete()
+        return True
+    else:
+        return False
 
