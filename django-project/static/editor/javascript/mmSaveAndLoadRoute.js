@@ -129,6 +129,8 @@ define(function(){
                 console.log(res);
                 if(res != "ERROR"){
                     callback(res);
+                }else{
+                    $('.fadeBGShow').remove();
                 }
             }
         });

@@ -48,14 +48,12 @@
                     <div class="startmedia-wrapper">
                         <h3>Media på stationer:</h3>
                         <ul class="stations-list">
+                            {% for s in stations %}
                             <li class="clearfix">
-                                <p class="small-text">Station 1</p>
-                                <a href="/editor/media/station/"><span class="typcn typcn-chevron-right"></span></a>
+                                <p class="small-text">Station {{ s.number }}</p>
+                                <a href="/editor/media/{{ cur_route }}/station/{{ s.id }}"><span class="typcn typcn-chevron-right"></span></a>
                             </li>
-                            <li class="clearfix">
-                                <p class="small-text">Station 2</p>
-                                <a href="/editor/media/station/"><span class="typcn typcn-chevron-right"></span></a>
-                            </li>
+                            {% endfor %}
                         </ul>
                         <h3>Media på AR-markörer:</h3>
                         <ul class="stations-list">

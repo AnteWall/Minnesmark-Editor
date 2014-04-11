@@ -396,7 +396,22 @@ ul.media-list li p{
     height: 100%;
     background-color: rgba(255,255,255,.5);
 }
-
+.fadeBGShow{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,.5);
+}
+.fadeBGShow img{
+    display:block;
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:50%;
+    margin:auto;
+}
 .media-info-box{
     position: fixed;
     top: 100px;
@@ -494,4 +509,9 @@ ul.media-list li p{
     padding: 10px 20px;
     border-radius:8px;
     -webkit-border-radius: 8px;
+}
+.fadeBG img{
+    width: 300px;
+    height: 300px;
+    margin:auto;
 }

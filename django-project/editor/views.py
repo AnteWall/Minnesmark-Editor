@@ -45,7 +45,17 @@ def render_page_general(request,route_id):
 @login_required
 def render_page_media(request,route_id):
     routes = get_all_routes_from_user(request.user.id)
-    return render_to_response('editor/media.html', {'routes': routes,'cur_route':route_id},                              context_instance=RequestContext(request))
+    cur_route = Route.objects.get(id=route_id)
+    if cur_route.user == request.user or request.user.is_superuser:
+        stations = Station.objects.filter(route=cur_route)
+        return render_to_response('editor/media.html',
+                                  {'routes': routes,
+                                   'cur_route':route_id,
+                                   'stations':stations},
+                              context_instance=RequestContext(request))
+    else:
+        redirect('/account/login')
+
 
 @login_required
 def render_page_publish(request,route_id):
@@ -80,7 +90,7 @@ def handle_upload(f,username):
 def load_route_from_db(request,route_id):
     response_data = {}
     try:
-        route = Route.objects.get(id = route_id)
+        route = Route.objects.get(id = route_id,user=request.user)
     except Route.DoesNotExist:
         return HttpResponse(json.dumps("ERROR"), content_type="application/json")
 

@@ -453,10 +453,18 @@ define(function () {
                 load_stations[i].latitude,
                 load_stations[i].longitude),
                 load_stations[i].index);
+            //Set Current map position of last station
+            if(i == load_stations.length-1){
+                map.setCenter(new google.maps.LatLng(load_stations[i].latitude,load_stations[i].longitude));
+            }
         }
 
 
-
+        //Remove loading Window
+        //Wait 1 second extra for markers to drop
+        setTimeout(function(){
+            $('.fadeBGShow').remove();
+        },2000)
 
     };
 
