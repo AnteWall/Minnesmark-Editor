@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from minnesmark.views import register_account
-from editor.views import render_page
+from editor.views import render_page, render_page_no_route, load_route_from_db
 from editor.views import render_page_general
 from editor.views import render_page_media
 from editor.views import render_page_publish
@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url='/accounts/login'),name="index"),
 
     #Redirects to Editor after login
-    url(r'^accounts/profile/', RedirectView.as_view(url='/editor/general')),
+    url(r'^accounts/profile/', RedirectView.as_view(url='/editor/')),
 
     # Examples:
     #url(r'^/$', 'minnesmark.views.home', name='home'),
@@ -38,6 +38,7 @@ urlpatterns = patterns('',
 
     #url for the editor
     url(r'^editor/stations/(?P<route_id>\d+)/$', render_page),
+    url(r'^editor/$', render_page_no_route),
     url(r'^editor/general/(?P<route_id>\d+)/$', render_page_general),
     url(r'^editor/media/(?P<route_id>\d+)/$', render_page_media),
     url(r'^editor/media/station/$', render_page_addMedia),
@@ -45,6 +46,7 @@ urlpatterns = patterns('',
 
     #url for database
     url(r'^editor/saveRouteDB', save_route_to_database),
+    url(r'^editor/getRoute/(?P<route_id>\d+)/$', load_route_from_db),
     url(r'^editor/createRoute', create_route),
 
 

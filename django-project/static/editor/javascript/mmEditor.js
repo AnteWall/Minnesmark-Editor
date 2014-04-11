@@ -246,6 +246,11 @@ define(function () {
 
     };
 
+    loadStation = function(position,nextPathIndex){
+        var newStation = createStation(position, nextPathIndex);
+        stations.push(newStation);
+    }
+
     createStation = function(position, pathIndex){
 
         var customImage = {
@@ -281,7 +286,7 @@ define(function () {
             //handCursor,
             labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels",       // the CSS class for the label
-            labelContent:  "Station&nbsp;" + (stations.length+1).toString(),
+            labelContent: (stations.length+1).toString(),
             labelInBackground: false,
             //labelStyle,
             labelVisible: true,         // visible if marker is
@@ -421,7 +426,7 @@ define(function () {
 
             if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
                 stations[sIndex].pathIndex -= Math.max(1,Decrease);
-                stations[sIndex].labelContent = "Station&nbsp;" + (sIndex+1);
+                stations[sIndex].labelContent = sIndex+1;
                 stations[sIndex].label.draw();
             }
         }
@@ -431,6 +436,28 @@ define(function () {
     resetTrailSystem = function(){
         stations = [];
         //collisionWindows = [];
+    };
+
+    my.loadRoute = function(route_info){
+        console.log(route_info);
+        var load_stations = route_info["stations"];
+        var load_polylines = route_info["points"];
+
+        for(var i = 0; i < load_polylines.length;i++ ){
+            polyLine.getPath().setAt(load_polylines[i].index,
+                new google.maps.LatLng(load_polylines[i].latitude,load_polylines[i].longitude));
+        }
+
+        for(var i = 0; i < load_stations.length;i++ ){
+            loadStation(new google.maps.LatLng(
+                load_stations[i].latitude,
+                load_stations[i].longitude),
+                load_stations[i].index);
+        }
+
+
+
+
     };
 
   return my;

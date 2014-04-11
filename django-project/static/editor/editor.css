@@ -481,3 +481,17 @@ ul.media-list li p{
 .upload-file input{
     margin-bottom:20px;
 }
+.success{
+    margin: 5px 20px;
+    background-color: #64bf37;
+    padding: 10px 20px;
+    border-radius:8px;
+    -webkit-border-radius: 8px;
+}
+.error{
+    margin: 5px 20px;
+    background-color: red;
+    padding: 10px 20px;
+    border-radius:8px;
+    -webkit-border-radius: 8px;
+}

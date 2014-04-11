@@ -156,3 +156,6 @@ a{
     -o-transform: rotate(90deg);
     writing-mode: tb-rl;
 }
+.gray{
+    color: #939393;
+}
