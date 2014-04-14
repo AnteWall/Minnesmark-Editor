@@ -461,7 +461,7 @@ define(function () {
 
 
         //Remove loading Window
-        //Wait 1 second extra for markers to drop
+        //Wait 2 second extra for markers to drop
         setTimeout(function(){
             $('.fadeBGShow').remove();
         },2000)

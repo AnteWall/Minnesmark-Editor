@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from minnesmark.views import register_account
-from editor.views import render_page, render_page_no_route, load_route_from_db
+from editor.views import render_page, render_page_no_route, load_route_from_db, save_route_name_to_db
 from editor.views import render_page_general
 from editor.views import render_page_media
 from editor.views import render_page_publish
@@ -46,6 +46,7 @@ urlpatterns = patterns('',
 
     #url for database
     url(r'^editor/saveRouteDB', save_route_to_database),
+    url(r'^editor/saveroutename',save_route_name_to_db),
     url(r'^editor/getRoute/(?P<route_id>\d+)/$', load_route_from_db),
     url(r'^editor/createRoute', create_route),
 

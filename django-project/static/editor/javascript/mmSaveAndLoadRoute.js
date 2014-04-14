@@ -68,7 +68,6 @@ define(function(){
     }
 
     my.saveToDatabase = function(stations,path){
-        console.log("Function entered");
         var csrftoken = getCookie('csrftoken');
 
         $.ajaxSetup({
@@ -102,7 +101,7 @@ define(function(){
                 $p.appendTo($('.station')).hide().slideDown();
                 setTimeout(function(){
                     $p.slideUp(function(){
-                      $p.remove();
+                        $p.remove();
                     })
                 },2500)
             }
@@ -137,6 +136,53 @@ define(function(){
 
 
         return editor_data;
+    };
+
+    my.saveRouteName = function(){
+        var csrftoken = getCookie('csrftoken');
+
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        var route_data = {};
+        var inputv = $('#tour-name').val();
+        if(inputv.length > 0){
+
+            route_data["name"] = $('#tour-name').val();
+            route_data["route_id"] = getIDfromURL();
+            var request = $.ajax({
+                url: "/editor/saveroutename",
+                type: "POST",
+                data: JSON.stringify(route_data),
+                datatype:JSON,
+                contentType: "application/json;charset=utf-8",
+
+                success: function(res){
+                    console.log(res);
+                    if(res["result"] == "ok"){
+                        $p = $('<p>',{class:"success",text:res["message"]});
+                        $('.tour-list li.active').each(function(){
+
+                            $($(this).children()[1]).html(inputv);
+
+                        });
+                    }else{
+                        $p = $('<p>',{class:"errror",text:res["message"]});
+                    }
+                    $p.prependTo($('.startmedia-wrapper')).hide().slideDown();
+                    setTimeout(function(){
+                        $p.slideUp(function(){
+                            $p.remove();
+                        })
+                    },2500)
+                }
+            });
+        }
     };
 
 

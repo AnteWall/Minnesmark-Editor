@@ -29,6 +29,8 @@ def render_page(request,route_id):
 @login_required
 def render_page_general(request,route_id):
     routes = get_all_routes_from_user(request.user.id)
+    route = Route.objects.get(id=route_id)
+    route_name = route.name
     if request.method == 'POST':
         success = False
         if request.user.is_authenticated():
@@ -39,7 +41,7 @@ def render_page_general(request,route_id):
             print("Funka!")
         else:
             print("Fuck...")
-    return render_to_response('editor/general.html', {'routes': routes,'cur_route':route_id},
+    return render_to_response('editor/general.html', {'routes': routes,'cur_route':route_id,'cur_route_name':route_name},
                               context_instance=RequestContext(request))
 
 @login_required
@@ -164,5 +166,30 @@ def create_route(request):
     route = Route(user=request.user)
     route.save()
     return redirect('/editor/general/'+str(route.id))
+
+
+@login_required
+def save_route_name_to_db(request):
+    response_data = {}
+
+    """Load JSON"""
+    try:
+        json_str = request.body.decode(encoding='UTF-8')
+        json_obj = json.loads(json_str)
+    except:
+        response_data['result'] = 'failed'
+        response_data['message'] = 'Kunde inte ladda rutt från id'
+
+    route = Route.objects.get(id=json_obj["route_id"])
+    if route.user == request.user:
+        route.name = json_obj['name'];
+        route.save()
+        response_data['result'] = 'ok'
+        response_data['message'] = 'Sparat'
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    else:
+        response_data['result'] = 'failed'
+        response_data['message'] = 'Du äger inte denna rutt.'
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 

@@ -13,6 +13,7 @@ $('document').ready(function(){
             console.log("Button clicked");
             mmSaveAndLoadRoute.saveToDatabase(mmEditor.getStations(),mmEditor.getPath());
         });
+
     });
 });
 

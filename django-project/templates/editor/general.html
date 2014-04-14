@@ -36,8 +36,9 @@
                             <button class="btn blue round"> <span class="typcn typcn-th-menu"> </span></button>
                             <p class="label-bottom">Göm menyn</p>
                         </div>
-                        <div class="btn-block">
-                            <button class="btn green round"> <span class="typcn typcn-cloud-storage"> </span></button>
+                        <div class="btn-block saveroutename">
+
+                            <button class="btn green round "> <span class="typcn typcn-cloud-storage"> </span></button>
                             <p class="label-bottom">Spara på kontot</p>
                         </div>
                         <h2 class="text-center">1. Bestäm namn och startmedia</h2>
@@ -46,7 +47,7 @@
                 <div class="rowfixfull clearfix">
                     <div class="tour-name-wrapper">
                         <label for="tour-name">Namn:</label>
-                        <input id="tour-name" type="text" name="tour-name"/>
+                        <input id="tour-name" type="text" name="tour-name" value="{{ cur_route_name }}"/>
                     </div>
                     <div class="startmedia-wrapper">
                         <h3>Startmedia:</h3>
