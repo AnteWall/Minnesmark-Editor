@@ -50,6 +50,9 @@ urlpatterns = patterns('',
     url(r'^editor/getRoute/(?P<route_id>\d+)/$', load_route_from_db),
     url(r'^editor/createRoute', create_route),
 
+    #url for database
+    url(r'^editor/saveRouteDB', save_route_to_database),
+    url(r'^editor/createRoute', create_route),
 
     # Testing
     #url(r'^date/$', current_datetime)

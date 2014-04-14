@@ -43,31 +43,53 @@ class Polyline(models.Model):
 
 # Media tables
 class Media(models.Model):
-    station = models.ForeignKey(Station)
+    route = models.ForeignKey(Route)
+    station = models.ForeignKey(Station,null=True)
     filename = models.CharField(max_length=40)
     filepath = models.CharField(max_length=256)
     size = models.IntegerField()
     treasure = models.BooleanField(default=False)
+    order = models.IntegerField()
 
-    FILEOPTIONS = {
-        (1, 'panorama'),
-        (2, 'camera_bg'),
-        (3, 'fullscreen')
+    PANORAMA = 1
+    CAMERA_BG = 2
+    FULLSCREEN = 3
+    FILE_OPTIONS = {
+        (PANORAMA, 1),
+        (CAMERA_BG, 2),
+        (FULLSCREEN, 3)
     }
 
-    options = models.IntegerField(choices=FILEOPTIONS,null=True)
+    options = models.IntegerField(choices=FILE_OPTIONS, null=True)
 
-    @classmethod
-    def create_media(cls, name, filepath, size, treasure):
-        media = cls(name=name, filepath=filepath, size=size, treasure=treasure)
-        return media
+    STARTMEDIA = 1
+    STATION_MEDIA = 2
+    AR_MEDIA = 3
+    media_type = {
+        (STARTMEDIA, 1),
+        (STATION_MEDIA, 2),
+        (AR_MEDIA, 3)
+    }
+    mediatype = models.IntegerField(choices=media_type, null=False)
 
+    def as_json(self):
+        return dict(
+            id=self.id,
+            name=self.filename,
+            filepath=self.filepath,
+            size=self.size,
+            treasure=self.treasure,
+            options=self.options,
+            user=self.user
+        )
 
-class MediaTypes(models.Model):
-    media = models.ForeignKey(Media)
+    user = models.ForeignKey(User, related_name='media_user')
+
+class MediaType(models.Model):
+    media = models.ForeignKey(Media,related_name='mediatype_media')
     category = models.CharField(max_length=20)
 
 
-class FileTypes(models.Model):
-    media = models.ForeignKey(MediaTypes)
-    filetype = models.CharField(max_length=40)
+class FileType(models.Model):
+    media = models.ForeignKey(MediaType)
+    file_type = models.CharField(max_length=40)

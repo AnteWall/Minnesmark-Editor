@@ -21,6 +21,7 @@ $('document').ready(function(){
                 $(this).removeClass('active');
                 $(this).find('.typcn-chevron-right').removeClass('rotate90');
             });
+
             $(".tour-menu").each(function() {
                 $(this).slideUp();
             });
