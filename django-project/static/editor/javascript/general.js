@@ -3,4 +3,14 @@
  */
 $('document').ready(function(){
     $('.media-files').sortable();
+
+    require(["/static/editor/javascript/mmSaveAndLoadRoute.js"],
+        function(mmSaveAndLoadRoute) {
+            $('.saveroutename').on('click',function(){
+                mmSaveAndLoadRoute.saveRouteName();
+            });
+        });
+
+
+
 });

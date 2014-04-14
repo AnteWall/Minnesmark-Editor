@@ -2,7 +2,15 @@
  * Created by ante on 2014-03-27.
  */
 $('document').ready(function(){
-
+    /*
+        Get Active and display menu on load
+     */
+    $('.tour-list li').each(function(){
+        if($(this).hasClass('active')){
+            $(this).find('.tour-menu').show();
+            $(this).find('.typcn-chevron-right').addClass('rotate90');
+        }
+    })
     $('.tour-list li').on('click',function(e){
         /*
             If Not has Active class, Hide all tour-menus

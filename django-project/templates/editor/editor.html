@@ -23,110 +23,13 @@
 
 
 {% block content %}
+
     <div class="row clearfix">
 
         <div class="column third">
 
-            <div class="menu">
-                <h1>Rundor</h1>
-                <div class="menu-btns">
-                    <div class="btn-block">
-                        <button class="btn green round"> <span class="typcn typcn-document-add"> </span></button>
-                        <p class="label-bottom">Ny runda</p>
-                    </div>
-                    <div class="btn-block">
-                        <button class="btn blue round"> <span class="typcn typcn-cog"> </span></button>
-                        <p class="label-bottom">Inställningar</p>
-                    </div>
-                    <div class="btn-block">
-                        <a href="/accounts/logout"><button class="btn blue round"> <span class="typcn typcn-power"> </span></button></a>
-                        <p class="label-bottom">Logga ut</p>
-                    </div>
-                </div>
-            </div>
-            <div class="tour">
-                <ul class="tour-list">
-                    <li>
-                        <span class="typcn typcn-chevron-right see-more"></span>
-                        <h2 class="see-more">Testa lite grann</h2>
-                        <p class="small-text">Opublicerad</p>
-                        <ul class="tour-menu">
-                            <li class="clearfix">
-                                <p>1. Bestäm namn och startmedia</p>
-                                <a href="/editor/general" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>2. Lägg till stationer på kartan</p>
-                                <a href="/editor/stations" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>3. Lägg till media</p>
-                                <a href="/editor/media" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>4. Publicera, skriv ut och färdigställ</p>
-                                <a href="/editor/publish" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <span class="typcn typcn-chevron-right see-more"></span>
-                        <h2 class="see-more">Testa lite grann</h2>
-                        <p class="small-text">Opublicerad</p>
-                        <ul class="tour-menu">
-                            <li class="clearfix">
-                                <p>1. Bestäm namn och startmedia</p>
-                                <a href="/editor/general" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>2. Lägg till stationer på kartan</p>
-                                <a href="/editor/stations" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>3. Lägg till media</p>
-                                <a href="/editor/media" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>4. Publicera, skriv ut och färdigställ</p>
-                                <a href="/editor/publish" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <span class="typcn typcn-chevron-right see-more"></span>
-                        <h2 class="see-more">Testa lite grann</h2>
-                        <p class="small-text">Opublicerad</p>
-                        <ul class="tour-menu">
-                            <li class="clearfix">
-                                <p>1. Bestäm namn och startmedia</p>
-                                <a href="/editor/general" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <a href="/editor/stations" class="editor-btn active"><span class="typcn typcn-chevron-right"></span></a>
-                                <p>2. Lägg till stationer på kartan</p>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>3. Lägg till media</p>
-                                <a href="/editor/media" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-
-                            </li>
-                            <li class="clearfix">
-                                <p>4. Publicera, skriv ut och färdigställ</p>
-                                <a href="/editor/publish" class="editor-btn"><span class="typcn typcn-chevron-right"></span></a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
+            {% include 'editor/editormenu.html' %}
+            {% include 'editor/route_menu.html' %}
         </div>
         <div class="column two-thirds">
 
@@ -140,7 +43,7 @@
                             <p class="label-bottom">Göm menyn</p>
                         </div>
                         <div class="btn-block">
-                            <button class="btn green round"> <span class="typcn typcn-cloud-storage"> </span></button>
+                            <button class="saveRoute btn green round"> <span class="typcn typcn-cloud-storage"> </span></button>
                             <p class="label-bottom">Spara på kontot</p>
                         </div>
                         <h2 class="text-center">2. Lägg till stationer på kartan (max 6)</h2>
@@ -157,5 +60,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="fadeBGShow">
+        <img src="/static/images/loading.gif" alt="Laddar Karta">
     </div>
 {% endblock %}
