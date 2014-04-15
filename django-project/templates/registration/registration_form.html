@@ -3,6 +3,7 @@
 {% block metadata %}
 
     <link rel="stylesheet" href="/static/login/login.css" />
+    <script type="text/javascript" src="/static/javascript/registration.js"></script>
 
 
 {% endblock %}
@@ -21,21 +22,23 @@
                         <li>{{ error }}</li>
                     {% endfor %}
                 </ul>
+
+		<p><a href="/accounts/login">Gå tillbaka till Login</a></p>
                 <form method="post" action="{% url 'register' %}">
                     <fieldset class="tag">
-                        <input id="username" type="text" name="username" placeholder="Användarnamn..." required="required">
+                        <input id="username" type="text" name="username" placeholder="Användarnamn..." required="required" id="username">
                         <label for="username">Användarnamn:</label>
                     </fieldset>
                     <fieldset class="tag">
-                        <input type="email" name="email" placeholder="Email..." required="required">
+                        <input type="email" name="email" placeholder="Epost..." required="required" id="email">
                         <label for="email">Email:</label>
                     </fieldset>
                     <fieldset class="tag">
-                        <input type="text" name="firstname" placeholder="Förnamn..." required="required">
+                        <input type="text" name="firstname" placeholder="Förnamn..." required="required" id="firstname">
                         <label for="firstname">Förnamn:</label>
                     </fieldset>
                     <fieldset class="tag">
-                        <input type="text" name="lastname" placeholder="Efternamn..." required="required">
+                        <input type="text" name="lastname" placeholder="Efternamn..." required="required" id="lastname">
                         <label for="lastname">Efternamn:</label>
                     </fieldset>
                     <fieldset class="tag">
@@ -46,7 +49,7 @@
                         <input type="password" name="password_again" placeholder="Lösenord igen..." required="required">
                         <label for="password_again">Lösenord igen:</label>
                     </fieldset>
-                    <input type="submit" class="btn" value="Registera" />
+                    <input type="submit" class="btn" value="Registera" onclick="saveInput()" />
                     {% csrf_token %}
 
                 </form>

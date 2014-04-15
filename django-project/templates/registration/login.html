@@ -3,7 +3,7 @@
 {% block metadata %}
 
     <link rel="stylesheet" href="/static/login/login.css" />
-
+    <script type="text/javascript" src="/static/javascript/clearLocalStorage.js"></script>
 
 {% endblock %}
 
@@ -22,10 +22,10 @@
 
                 {% if user.is_authenticated %}
                     <p> Du är redan inloggad! <a href="/accounts/logout">Logga ut? </a> </p>
+		    <p> Gå till <a href="/editor/"> Editorn </a> </p>
                 {% else %}
 
                     <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
-
 
                         <fieldset class="tag">
                             {{ form.username }}

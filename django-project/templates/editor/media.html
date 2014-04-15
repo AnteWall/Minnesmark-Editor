@@ -13,6 +13,8 @@
     <script src="/static/editor/javascript/jquery-ui-1.10.4.custom.min.js"></script>
     <script type="text/javascript" src="/static/editor/javascript/general.js"></script>
 
+    <script type="text/javascript" src="/static/javascript/setActiveChoice.js"></script>
+
 {% endblock %}
 
 
@@ -51,7 +53,7 @@
                             {% for s in stations %}
                             <li class="clearfix">
                                 <p class="small-text">Station {{ s.number }}</p>
-                                <a href="/editor/media/{{ cur_route.id }}/station/{{ s.id }}"><span class="typcn typcn-chevron-right"></span></a>
+				<a href="/editor/media/{{ cur_route.id }}/station/{{ s.id }}"><span class="typcn typcn-chevron-right"></span></a>
                             </li>
                             {% endfor %}
                         </ul>
