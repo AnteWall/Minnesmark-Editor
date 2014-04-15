@@ -9,22 +9,19 @@ from django.contrib.auth.models import User
 # Route tables
 class Route(models.Model):
     user = models.ForeignKey(User)
-    name = models.CharField(max_length=40,default="Ny Rutt")
+    name = models.CharField(max_length=40, default="Ny Rutt")
     published = models.BooleanField(default=False)
+
 
 class Station(models.Model):
     route = models.ForeignKey(Route, null=True)
     number = models.IntegerField()
     index = models.IntegerField()
-    latitude = models.DecimalField(max_digits=30, decimal_places=25)
-    longitude = models.DecimalField(max_digits=30, decimal_places=25)
 
     def as_json(self):
         return dict(
             number=self.number,
-            index=self.index,
-            latitude=float(self.latitude),
-            longitude=float(self.longitude)
+            index=self.index
         )
 
 
@@ -44,7 +41,7 @@ class Polyline(models.Model):
 # Media tables
 class Media(models.Model):
     route = models.ForeignKey(Route)
-    station = models.ForeignKey(Station,null=True)
+    station = models.ForeignKey(Station, null=True)
     filename = models.CharField(max_length=40)
     filepath = models.CharField(max_length=256)
     size = models.IntegerField()
@@ -85,8 +82,9 @@ class Media(models.Model):
 
     user = models.ForeignKey(User, related_name='media_user')
 
+
 class MediaType(models.Model):
-    media = models.ForeignKey(Media,related_name='mediatype_media')
+    media = models.ForeignKey(Media, related_name='mediatype_media')
     category = models.CharField(max_length=20)
 
 

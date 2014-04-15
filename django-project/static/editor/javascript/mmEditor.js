@@ -5,7 +5,6 @@
 define(function () {
     //Public variables/functions
     var my = {
-
         },
     //Private Variables/functions
         browserSupportFlag,
@@ -15,18 +14,25 @@ define(function () {
         polyLine,
         swingPoints,
         stations,
-        radiusDistance;
+        radiusDistance,
+        editorSaved;
 
+    my.isSaved = function(){
+        return editorSaved;
+    };
+    my.saveEditor = function(){
+        editorSaved = true;
+    };
     my.numberOfActiveStations = function(){
         return stations.length;
-    }
+    };
 
     my.getStations = function(){
         return stations;
-    }
+    };
     my.getPath = function(){
         return polyLine.getPath().getArray();
-    }
+    };
 
     geoLocation = function(){
         /*
@@ -61,14 +67,15 @@ define(function () {
     };
 
     my.initializeEditor = function(){
+        mapLoaded = false;
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(59.321693,17.886825); // Drottningholm, Stockholm
         resetSearchSystem();
         resetTrailSystem();
         radiusDistance = 10;
-
+        editorSaved = true;
 	//Different options to the map
-        var mapOptions = { 
+        var mapOptions = {
             center: initialLocation,
             panControl: false,
             mapTypeControlOptions: {
@@ -100,7 +107,7 @@ define(function () {
         optionsWindow = new google.maps.InfoWindow({
             content: ""
         });
-
+        mapLoaded = true;
     };
 
     createSearchField = function(){
@@ -204,6 +211,7 @@ define(function () {
                         stations[i].pathIndex += 1;
                     }
                 }
+                editorSaved = false;
             }
         });
 
@@ -236,7 +244,7 @@ define(function () {
 
     my.addStation = function(){
         var curStationCount = (stations.length + 1);
-
+        editorSaved = false;
 	// Check so we can't add more than 6 stations
         if(curStationCount <= 6){
             var position = map.getCenter();
@@ -304,6 +312,7 @@ define(function () {
 	// Updates the path to the marker that's being dragged
         google.maps.event.addListener(station, "drag", function(event) {
             polyLine.getPath().setAt(station.pathIndex,station.getPosition());
+            editorSaved = false;
         });
 
 	// On dragend, check if position is valid
@@ -367,7 +376,7 @@ define(function () {
                         }
                     }
                 }
-		
+
 		// When the new position is set, we need to check every swing point/station
 		// again to make sure that the new position is valid
                 i = -1;
@@ -417,6 +426,7 @@ define(function () {
     // When a station is removed, all the swingpoints before/after the station is also removed
     my.removeStation = function(pathIndex){
         var Decrease = 0;
+        editorSaved = false;
         for (var sIndex=0; sIndex<stations.length; sIndex++){
 
             if(stations[sIndex].pathIndex === pathIndex){
@@ -435,6 +445,7 @@ define(function () {
                     polyLine.getPath().removeAt(pIndex);
                     Decrease++;
                 }
+                updateDatabaseWithDeletedStation(stations[sIndex]);
                 stations[sIndex].setMap(null);
                 stations[sIndex].radius.setMap(null);
                 stations.splice(sIndex,1);
@@ -447,6 +458,7 @@ define(function () {
                 stations[sIndex].label.draw();
             }
         }
+
         optionsWindow.close();
     };
 
@@ -456,32 +468,30 @@ define(function () {
     };
 
     my.loadRoute = function(route_info){
-        console.log(route_info);
         var load_stations = route_info["stations"];
         var load_polylines = route_info["points"];
 
         for(var i = 0; i < load_polylines.length;i++ ){
-            polyLine.getPath().setAt(load_polylines[i].index,
-                new google.maps.LatLng(load_polylines[i].latitude,load_polylines[i].longitude));
-        }
-
-        for(var i = 0; i < load_stations.length;i++ ){
-            loadStation(new google.maps.LatLng(
-                load_stations[i].latitude,
-                load_stations[i].longitude),
-                load_stations[i].index);
-            //Set Current map position of last station
-            if(i == load_stations.length-1){
-                map.setCenter(new google.maps.LatLng(load_stations[i].latitude,load_stations[i].longitude));
+            var linePos = new google.maps.LatLng(load_polylines[i].latitude,load_polylines[i].longitude);
+            for(var j = 0; j < load_stations.length; j++){
+                if(load_stations[j].index == load_polylines[i].index){
+                    loadStation(linePos,load_stations[j].index);
+                    //Set Current map position of last station
+                    if(i == load_stations.length-1){
+                        map.setCenter(new google.maps.LatLng(load_stations[i].latitude,load_stations[i].longitude));
+                    }
+                }
             }
+            polyLine.getPath().setAt(load_polylines[i].index,linePos);
         }
-
 
         //Remove loading Window
         //Wait 2 second extra for markers to drop
         setTimeout(function(){
             $('.fadeBGShow').remove();
         },2000)
+
+
 
     };
 

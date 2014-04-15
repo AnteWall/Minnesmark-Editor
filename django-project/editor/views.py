@@ -1,7 +1,8 @@
 import json
 import os
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.contrib.redirects.models import Redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -30,6 +31,10 @@ def render_page_no_route(request):
 @login_required
 def render_page(request,route_id):
     routes = get_all_routes_from_user(request.user.id)
+    route = validateRoute(route_id,request.user)
+    if route is False:
+        return HttpResponseRedirect('/editor')
+
     return render_to_response('editor/editor.html', {'routes': routes,'cur_route':route_id},
                               context_instance=RequestContext(request))
 
@@ -38,7 +43,10 @@ def render_page(request,route_id):
 @login_required
 def render_page_general(request,route_id):
     routes = get_all_routes_from_user(request.user.id)
-    route = Route.objects.get(id=route_id)
+    route = validateRoute(route_id,request.user)
+    if route is False:
+        return HttpResponseRedirect('/editor')
+
     route_name = route.name
     #If POST request to page
     if request.method == 'POST':
@@ -64,7 +72,7 @@ def render_page_general(request,route_id):
     #TODO save order of objects in list
     #Get all media set to startmedia
     start_media = []
-    for m in Media.objects.filter(mediatype=Media.STARTMEDIA, user=request.user).order_by('order'):
+    for m in Media.objects.filter(route=route,mediatype=Media.STARTMEDIA, user=request.user).order_by('order'):
         start_media.append(m.as_json())
 
     return render_to_response('editor/general.html', {'start_media':start_media,'routes': routes,'cur_route':route_id,'cur_route_name':route_name},
@@ -75,26 +83,40 @@ def render_page_general(request,route_id):
 @login_required
 def render_page_media(request,route_id):
     routes = get_all_routes_from_user(request.user.id)
-    cur_route = Route.objects.get(id=route_id)
-    if cur_route.user == request.user or request.user.is_superuser:
-        stations = Station.objects.filter(route=cur_route)
+
+    route = validateRoute(route_id,request.user)
+    if route is False:
+        return HttpResponseRedirect('/editor')
+
+    if route.user == request.user or request.user.is_superuser:
+        stations = Station.objects.filter(route=route)
         return render_to_response('editor/media.html',
                                   {'routes': routes,
-                                   'cur_route':route_id,
+                                   'cur_route':route,
                                    'stations':stations},
                               context_instance=RequestContext(request))
     else:
         redirect('/account/login')
 
 # /editor/publish/<route_id>
-# Renders publush page of route
+# Renders publish page of route
 @login_required
 def render_page_publish(request,route_id):
     routes = get_all_routes_from_user(request.user.id)
-    return render_to_response('editor/publish.html', {'routes': routes,'cur_route':route_id},
+    route = validateRoute(route_id,request.user)
+    if route is False:
+        return HttpResponseRedirect('/editor')
+
+
+    #Get all media set to startmedia
+    start_media = []
+    for m in Media.objects.filter(route=route,mediatype=Media.STARTMEDIA, user=request.user).order_by('order'):
+        start_media.append(m.as_json())
+    return render_to_response('editor/publish.html', {'routes': routes,'cur_route':route_id,'start_media':start_media},
                               context_instance=RequestContext(request))
+
 # /editor/media/<route_id>/station/<station_id>
-# NOT DONT IN URL !!!!!
+# NOT DONE IN URL !!!!!
 # TODO render right media with files
 @login_required
 def render_page_addMedia(request):
@@ -150,7 +172,7 @@ def handle_upload(f, username, user_id,route_id):
                 order=media_count + 1,
                 station=None)
     media.save()
-    #If media has been saved return true
+    #If media has beredirect('/editor')en saved return true
     if media.pk > 0:
         return True, media.pk
     else:
@@ -171,6 +193,7 @@ def load_route_from_db(request,route_id):
     stations = Station.objects.filter(route=route)
     response_data["stations"] = []
     for s in stations:
+        #print(s.as_json())
         response_data["stations"].append(s.as_json())
     points = Polyline.objects.filter(route=route)
     response_data["points"] = []
@@ -203,14 +226,13 @@ def save_route_to_database(request):
         response_data['result'] = 'failed'
         response_data['message'] = 'Kunde inte ladda rutt från id'
     #Save all stations
+
     try:
 
         for s in json_obj["stations"]:
             station = Station(route=route,
-                             number=s["number"],
-                             index=s["index"],
-                             longitude=s["longitude"],
-                             latitude=s["latitude"])
+                              number=s["number"],
+                              index=s["index"])
             station.save()
     except:
         response_data['result'] = 'failed'
@@ -280,3 +302,16 @@ def delete_media(media_id, user_id):
     else:
         return False
 
+
+#Check if route exist or you own it
+#Superuser always return the route if it exist
+def validateRoute(route_id, user):
+    try:
+        route = Route.objects.get(id=route_id)
+    except Route.DoesNotExist:
+        return False
+    if not user.is_superuser:
+        if route.user != user:
+            return False
+
+    return route

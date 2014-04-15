@@ -47,6 +47,7 @@ urlpatterns = patterns('',
     #url for database
     url(r'^editor/saveRouteDB', save_route_to_database),
     url(r'^editor/saveroutename',save_route_name_to_db),
+
     url(r'^editor/getRoute/(?P<route_id>\d+)/$', load_route_from_db),
     url(r'^editor/createRoute', create_route),
 
