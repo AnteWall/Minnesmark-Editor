@@ -5,7 +5,6 @@
 define(function () {
     //Public variables/functions
     var my = {
-
         },
     //Private Variables/functions
         browserSupportFlag,
@@ -15,11 +14,25 @@ define(function () {
         polyLine,
         swingPoints,
         stations,
-        radiusDistance;
+        radiusDistance,
+        editorSaved;
 
+    my.isSaved = function(){
+        return editorSaved;
+    };
+    my.saveEditor = function(){
+        editorSaved = true;
+    };
     my.numberOfActiveStations = function(){
         return stations.length;
-    }
+    };
+
+    my.getStations = function(){
+        return stations;
+    };
+    my.getPath = function(){
+        return polyLine.getPath().getArray();
+    };
 
     geoLocation = function(){
         /*
@@ -54,12 +67,14 @@ define(function () {
     };
 
     my.initializeEditor = function(){
+        mapLoaded = false;
         browserSupportFlag =  new Boolean();
         initialLocation = new google.maps.LatLng(59.321693,17.886825); // Drottningholm, Stockholm
         resetSearchSystem();
         resetTrailSystem();
         radiusDistance = 10;
-
+        editorSaved = true;
+	//Different options to the map
         var mapOptions = {
             center: initialLocation,
             panControl: false,
@@ -81,6 +96,7 @@ define(function () {
             }
         };
 
+	//Specify where the map should be, and with which options
         map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
         geoLocation();
@@ -91,7 +107,7 @@ define(function () {
         optionsWindow = new google.maps.InfoWindow({
             content: ""
         });
-
+        mapLoaded = true;
     };
 
     createSearchField = function(){
@@ -150,9 +166,9 @@ define(function () {
             };
 
         var newSearchPosition = new google.maps.Marker({
-        map: map,
-        icon: image,
-        position: place.geometry.location
+            map: map,
+            icon: image,
+            position: place.geometry.location
         });
 
         return newSearchPosition;
@@ -177,11 +193,14 @@ define(function () {
             strokeOpacity: 1.0,     // opacity between 0.0 and 1.0
             strokeWeight: 3,        // width in pixels
             visible: true           // visible on map
-            //zIndex,               // compared to other polys
+            //zIndex: 1000               // compared to other polys
+
+            // CUSTOM PROPERTIES
         };
 
         var poly = new google.maps.Polyline(polyOptions);
 
+	// If we added a swing point, the path index needs to be updated
         google.maps.event.addListener(poly, "mouseup", function(event) {
             // edge = the line (between stations and/or swing points)
             previousPoint = event.edge;
@@ -192,13 +211,19 @@ define(function () {
                         stations[i].pathIndex += 1;
                     }
                 }
+                editorSaved = false;
             }
         });
 
-        /*google.maps.event.addListener(poly, "mouseout", function(event) {
-            collisionControll();
-        });*/
+	// Check if the swing point/station is in a valid position
+        google.maps.event.addListener(poly, "mouseout", function(event) {
+            //console.log("vertex: " + event.vertex);
+            if (event.vertex !== undefined){
+                collisionControll(event.vertex);
+            }
+        });
 
+	// Popup a options window
         google.maps.event.addListener(poly, "click", function(event) {
             if(event.vertex !== undefined) {
                 //console.log("This is a vertex ("+ event.vertex +").");
@@ -206,24 +231,39 @@ define(function () {
             }
         });
 
+        /*google.maps.event.addListener(poly, "mousemove", function(event) {
+            console.log("vertex: " + event.vertex);
+            if (event.vertex !== undefined){
+                collisionControll(event.vertex);
+            }
+        });*/
+
       return poly;
 
     };
 
     my.addStation = function(){
         var curStationCount = (stations.length + 1);
-
+        editorSaved = false;
+	// Check so we can't add more than 6 stations
         if(curStationCount <= 6){
             var position = map.getCenter();
             var path = polyLine.getPath();
-            var nextIndex = path.length;
+            var nextPathIndex = path.length;
             path.push(position);
-            var newStation = createStation(position, nextIndex);
 
-            stations.push(newStation);
+            var newStation = createStation(position, nextPathIndex);
+
+            stations.push(newStation); // Add the new station to stations[]
+            collisionControll(newStation.pathIndex,true);
         }
 
     };
+
+    loadStation = function(position,nextPathIndex){
+        var newStation = createStation(position, nextPathIndex);
+        stations.push(newStation);
+    }
 
     createStation = function(position, pathIndex){
 
@@ -253,14 +293,14 @@ define(function () {
             //shape,                // 
             //title,                // rollover text
             visible: true,          // visible on map
-            //zIndex,               // compared to other markers
+            zIndex: 1000,               // compared to other markers
 
             // MARKERWITHLABEL PROPERTIES
             //crossImage,
             //handCursor,
             labelAnchor: new google.maps.Point(-25, 17),
             labelClass: "labels",       // the CSS class for the label
-            labelContent: "Station " + (stations.length+1).toString(),
+            labelContent: (stations.length+1).toString(),
             labelInBackground: false,
             //labelStyle,
             labelVisible: true,         // visible if marker is
@@ -269,22 +309,26 @@ define(function () {
             pathIndex: pathIndex
         });
 
+	// Updates the path to the marker that's being dragged
         google.maps.event.addListener(station, "drag", function(event) {
             polyLine.getPath().setAt(station.pathIndex,station.getPosition());
+            editorSaved = false;
         });
 
+	// On dragend, check if position is valid
         google.maps.event.addListener(station, "dragend", function(event) {
-            if(stations.length > 1)
-                collisionControll(station,0);
+            if(stations.length > 1) {
+                collisionControll(station.pathIndex,true);
+            }
         });
 
+	// Popup a option window
         google.maps.event.addListener(station, "click", function(event) {
             addOptionsWindow(event.latLng,station.pathIndex,my.removeStation);
         });
 
         station.radius = createStationRadius();
         station.radius.bindTo('center', station, 'position');
-        collisionControll(station,0);
 
         return station;
     };
@@ -298,33 +342,54 @@ define(function () {
         });
     };
 
-    collisionControll = function(movingStation, init){
-        //TODO re-implement swing point collision control
-        if (init === stations.length)
-            return; 
-        for(var i = init; i< stations.length; i++) {
+    collisionControll = function(collisionPathIndex,isStation){
+        var checked = [];
 
-            stationaryStation = stations[i];
+        for(var i = 0; i< polyLine.getPath().length; i++) {
+            if(checked.indexOf(i)  >= 0){
+                //console.log("Already checked " + i);
+                continue;
+            }
+
+            //console.log("Comparing " + collisionPathIndex + " with " + i);
+            targetPosition = polyLine.getPath().getAt(i);
 
             var spherical = google.maps.geometry.spherical;
             var distance = spherical.computeDistanceBetween(
-                stationaryStation.getPosition(),movingStation.getPosition());
+                targetPosition,polyLine.getPath().getAt(collisionPathIndex)); //Calculats the distance between 2 positions
 
-            if (movingStation.labelContent !== stationaryStation.labelContent && 
-                distance < radiusDistance*2) {
+            if (i !== collisionPathIndex && distance < radiusDistance*2) {
+                //console.log("Collision with " + i);
+
+                checked.push(i);
 
                 var newPosition  = spherical.computeOffset(
-                    stationaryStation.getPosition(), radiusDistance*2, 90);
-                movingStation.setPosition(newPosition);
-                polyLine.getPath().setAt(movingStation.pathIndex,newPosition);
+                    targetPosition,radiusDistance*2, 90); // Calculates where the new position should be
+                polyLine.getPath().setAt(collisionPathIndex,newPosition);
 
-                collisionControll(movingStation,init+1);
+		// Check if stations[] need to update with the new position
+                if(isStation === true){
+                    for(var j = 0; j< stations.length; j++) {
+                        if(stations[j].pathIndex === collisionPathIndex){
+                           //console.log("Moving station with index: " + j);
+                           stations[j].setPosition(newPosition);
+                        }
+                    }
+                }
+
+		// When the new position is set, we need to check every swing point/station
+		// again to make sure that the new position is valid
+                i = -1;
             }
+            //console.log("\n");
         }
-    };
 
+        //console.log("FINISHED\n");
+    }
+
+    // A popup window where you can get the latlng coordinates, and remove the swing point/station
     addOptionsWindow = function(latLng,index,func){
-        var content = "<div class='delStation clearfix'>" +
+        var content = "<div class='delStation clearfixmouseout'>" +
             "<h3>Station "+(index+1)+"</h3>" +
             "<button class='btn'>Klar</button>" +
             "<div class='input-wrapper'>" +
@@ -346,6 +411,7 @@ define(function () {
         })
     }
 
+    // Removes a swing point
     my.removePoint = function(pathIndex){
         polyLine.getPath().removeAt(pathIndex);
         for (var sIndex=0; sIndex<stations.length; sIndex++){
@@ -356,8 +422,11 @@ define(function () {
         optionsWindow.close();
     };
 
+    // Removes a station
+    // When a station is removed, all the swingpoints before/after the station is also removed
     my.removeStation = function(pathIndex){
         var Decrease = 0;
+        editorSaved = false;
         for (var sIndex=0; sIndex<stations.length; sIndex++){
 
             if(stations[sIndex].pathIndex === pathIndex){
@@ -376,23 +445,54 @@ define(function () {
                     polyLine.getPath().removeAt(pIndex);
                     Decrease++;
                 }
+                updateDatabaseWithDeletedStation(stations[sIndex]);
                 stations[sIndex].setMap(null);
                 stations[sIndex].radius.setMap(null);
                 stations.splice(sIndex,1);
             }
 
+	    // If we need to update station index
             if(stations[sIndex] != undefined && stations[sIndex].pathIndex >= pathIndex){
                 stations[sIndex].pathIndex -= Math.max(1,Decrease);
                 stations[sIndex].labelContent = sIndex+1;
                 stations[sIndex].label.draw();
             }
         }
+
         optionsWindow.close();
     };
 
     resetTrailSystem = function(){
         stations = [];
         //collisionWindows = [];
+    };
+
+    my.loadRoute = function(route_info){
+        var load_stations = route_info["stations"];
+        var load_polylines = route_info["points"];
+
+        for(var i = 0; i < load_polylines.length;i++ ){
+            var linePos = new google.maps.LatLng(load_polylines[i].latitude,load_polylines[i].longitude);
+            for(var j = 0; j < load_stations.length; j++){
+                if(load_stations[j].index == load_polylines[i].index){
+                    loadStation(linePos,load_stations[j].index);
+                    //Set Current map position of last station
+                    if(i == load_stations.length-1){
+                        map.setCenter(new google.maps.LatLng(load_stations[i].latitude,load_stations[i].longitude));
+                    }
+                }
+            }
+            polyLine.getPath().setAt(load_polylines[i].index,linePos);
+        }
+
+        //Remove loading Window
+        //Wait 2 second extra for markers to drop
+        setTimeout(function(){
+            $('.fadeBGShow').remove();
+        },2000)
+
+
+
     };
 
   return my;

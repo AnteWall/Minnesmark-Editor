@@ -3,62 +3,67 @@
 {% block title %}Editor{% endblock %}
 
 {% block metadata %}
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
-<link rel="stylesheet"
-       href="/static/editor/style.css"/>
+    <link rel="stylesheet"
+          href="/static/editor/editor.css"/>
 
-<script type="text/javascript"
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true&libraries=geomentry&libraries=places">
-</script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVHTeNANuWa7s5Xazkf_5FdWM0lXOiUIc&sensor=true&libraries=geomentry&libraries=places">
+    </script>
     <script type="text/javascript" src="/static/editor/javascript/markerwithlabel.js"></script>
 
     <script type="text/javascript"
-        src="/static/editor/javascript/mapeditor.js">
-</script>
+            src="/static/editor/javascript/mapeditor.js">
+    </script>
+    <script type="text/javascript" src="/static/editor/javascript/editor.js"></script>
+
+    <script type="text/javascript" src="/static/javascript/setActiveChoice.js"></script>
 
 
 {% endblock %}
 
 
 {% block content %}
-<div>
-  <div id="map-wrapper">
-    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-    <div id="map-wrapper"/>
-      <div id="map-canvas"></div>
-      <div id="stations-wrapper">
-          <div data-stationid="1"  class="station">
-              <p class="station-text">1</p>
-          </div>
-          <div data-stationid="2"  class="station hidden">
-              <p class="station-text">2</p>
-          </div>
-          <div data-stationid="3"  class="station hidden">
-              <p class="station-text">3</p>
 
-          </div>
-          <div data-stationid="4"  class="station hidden">
-              <p class="station-text">4</p>
+    <div class="row clearfix">
 
-          </div>
-          <div data-stationid="5" class="station hidden">
-              <p class="station-text">5</p>
+        <div class="column third">
 
-          </div>
-          <div data-stationid="6" class="station hidden">
-              <p class="station-text">6</p>
-          </div>
-      </div>
-      <div id="stations-options">
-          <button class="remove-station">&#10006;</button>
-      </div>
-  </div>
-  <div id="lists">
-    <p>Här ska alla listor ligga</p>
-  </div>
-  <div id="editor_info">
-    <p>Här ska information om editorn finnas</p>
-  </div>
-</div>
+            {% include 'editor/editormenu.html' %}
+            {% include 'editor/route_menu.html' %}
+        </div>
+        <div class="column two-thirds">
+
+
+            <div id="map-wrapper">
+                <div class="rowfix clearfix">
+
+                    <div class="top-wrapper">
+                        <div class="btn-block">
+                            <button class="btn blue round"> <span class="typcn typcn-th-menu"> </span></button>
+                            <p class="label-bottom">Göm menyn</p>
+                        </div>
+                        <div class="btn-block">
+                            <button class="saveRoute btn green round"> <span class="typcn typcn-cloud-storage"> </span></button>
+                            <p class="label-bottom">Spara på kontot</p>
+                        </div>
+                        <h2 class="text-center">2. Lägg till stationer på kartan (max 6)</h2>
+                    </div>
+                    <div class="btn-block btn-add-margin station">
+                        <button class="btn green round"> <span class="typcn typcn-plus"> </span></button>
+                        <p class="add-label ">Lägg till station</p>
+
+                    </div>
+                </div>
+                <div class="rowfixfull clearfix">
+                    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                    <div id="map-canvas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fadeBGShow">
+        <img src="/static/images/loading.gif" alt="Laddar Karta">
+    </div>
 {% endblock %}
